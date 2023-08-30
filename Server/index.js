@@ -16,6 +16,11 @@ mongoose
     throw new Error(`Error occured while connecting to MongoDB  ${err}`);
   });
 
+//middlewares
+//routes
+app.use("/hardware", require("./Routes/hardware"));
+app.use("/client", require("./Routes/client"));
+//starting server
 app.listen(PORT, () => {
   console.log(`Server Started at ${PORT}`);
 });
