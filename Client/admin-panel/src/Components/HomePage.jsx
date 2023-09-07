@@ -11,7 +11,6 @@ function HomePage() {
   useEffect(() => {
     async function initialFetch() {
       try {
-        const data = await axios.get();
         setData(data);
       } catch (err) {
         console.log(err);
