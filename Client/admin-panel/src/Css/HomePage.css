@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 .home-page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.home-page-container {
   border: 3px solid saddlebrown;
   width: 100%;
   height: 100vh;
@@ -12,7 +17,27 @@ nav {
   background: blue;
   height: 20px;
 }
-
+.sub-container {
+  border: 2px solid green;
+  height: 80%;
+}
+.home-page-container table {
+  border: 2px solid red;
+  width: 80%;
+  margin: auto;
+  border-collapse: collapse;
+}
+.home-page-container table td {
+  border: 1px solid black;
+  padding: 10px;
+}
+.home-page-container table th {
+  border: 1px solid black;
+  padding: 10px;
+}
+.pagination-container {
+  margin: auto;
+}
 .pagination-container {
   display: flex;
   max-width: 300px;
