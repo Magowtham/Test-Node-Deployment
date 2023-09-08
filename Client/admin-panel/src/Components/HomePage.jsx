@@ -9,6 +9,8 @@ function HomePage() {
   const [presentPage, setPresentPage] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditClicked, setIsEditClicked] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
   const fetchPageData = async (pageNumber) => {
     try {
       if (data.length < pageNumber * pageSize) {
@@ -33,7 +35,23 @@ function HomePage() {
     fetchPageData(e.selected + 1);
     setPresentPage(e.selected + 1);
   };
-
+  const handleEdit = (index) => {
+    setIsEditClicked(true);
+  };
+  const handleOverlay = () => {
+    setIsEditClicked(false);
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      setIsEditClicked(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  });
   useEffect(() => {
     async function initialFetch() {
       try {
@@ -55,6 +73,10 @@ function HomePage() {
   return (
     <>
       <div className="home-page-container">
+        <div
+          className={`overlay ${isEditClicked ? `open` : ``}`}
+          onClick={handleOverlay}
+        ></div>
         <nav></nav>
         <div className="sub-container">
           <table>
@@ -82,10 +104,16 @@ function HomePage() {
                     <td>{user.name}</td>
                     <td>{user.rollnumber}</td>
                     <td>{user.balance}</td>
-                    <button>Edit</button>
-                    <button>Remove</button>
-                    <button>Recharge History</button>
-                    <button>Transaction History</button>
+                    <td>
+                      <button
+                        onClick={() => {
+                          handleEdit(index);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button>Remove</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -108,6 +136,11 @@ function HomePage() {
           <button>View History</button>
           <button>Add Student</button>
         </div>
+        <form className="edit-form">
+          <input placeholder="RFID NO.." />
+          <input placeholder="Student Name.." />
+          <input placeholder="Roll Number.." />
+        </form>
       </div>
     </>
   );
