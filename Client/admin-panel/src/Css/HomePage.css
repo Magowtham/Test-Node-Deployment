@@ -60,7 +60,8 @@ nav {
   list-style: none;
 }
 
-.edit-form {
+.edit-form,
+.remove-form {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -70,6 +71,7 @@ nav {
   z-index: 999;
   visibility: hidden;
 }
-.edit-form.open {
+.edit-form.open,
+.remove-form.open {
   visibility: visible;
 }
