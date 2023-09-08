@@ -20,12 +20,16 @@ exports.AdminAuth = async (req , res) =>{
 
 
 exports.Register = async (req , res) =>{
-    const {name , password} = req.body;
+    try {
+        const {name , password} = req.body;
     const isValid = await Authentication.registerUser(name , password);
     if(!isValid.status){
         res.status(400).json(isValid);
     }else{
         res.status(200).json(isValid);
+    }
+    } catch (error) {
+        res.status(500).json(error.message);
     }
 }
 

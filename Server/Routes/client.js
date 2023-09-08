@@ -6,6 +6,7 @@ routes.post("/adduser", userController.addUser);
 routes.get("/getuser", userController.getUser);
 routes.post("/auth" , authController.AdminAuth);
 routes.post("/register" , authController.Register);
-routes.post("/delete" , userController.DeleteUser);
+routes.post("/delete" , userController.deleteUser);
+routes.put("/update/:id" , userController.editDetails);
 
 module.exports = routes;
