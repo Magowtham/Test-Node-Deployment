@@ -1,4 +1,7 @@
 const addUserModel = require("../models/add_user_model");
+const authModel = require("../models/auth_model");
+const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
 
 class UserService {
   static async newUser(name, rfid, rollnumber) {
@@ -26,6 +29,29 @@ class UserService {
     } catch (err) {
       throw err;
     }
+  }
+
+  static async deleteUserData(name , rfid , password) {
+    const data = await addUserModel.findOne({ rfid });
+    if (data == null) {
+      return { status: false, message: "User Dosen't Exist" };
+    }
+    else {
+      const adminData = await authModel.findOne({ name });
+      const isMatch = await bcrypt.compare(password , adminData.password);
+      if (!isMatch) {
+        return { status: false, message: "Invalid Password" };
+      }
+      else {
+        const userData = await addUserModel.deleteOne({rfid});
+        if (!userData) {
+          return { status: false, message: "Unable to delete" };
+        } else {
+          return { status: true, message: "User Deleted Successfully" };
+        }
+      }
+    }
+
   }
 }
 

@@ -28,3 +28,15 @@ exports.getUser = async (req, res) => {
     res.status(500).json({ status: false, message: "unable to find users" });
   }
 };
+
+
+
+exports.DeleteUser = async (req , res) =>{
+  const {name , rfid , password} = req.body;
+  const isDelete = await UserService.deleteUserData(name , rfid , password);
+  if(!isDelete){
+    res.status(400).json(isDelete);
+  }else{
+    res.status(200).json(isDelete);
+  }
+}

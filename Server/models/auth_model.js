@@ -26,5 +26,5 @@ authSchema.pre('save',async function(){
   
   });
 
-const authModel = database.model('authdata',authSchema);
+const authModel = database.model('authdatas',authSchema);
 module.exports = authModel;
