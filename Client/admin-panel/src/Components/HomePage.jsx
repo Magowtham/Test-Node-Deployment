@@ -18,12 +18,22 @@ function HomePage() {
   const [removeFormError, setRemoveFormError] = useState({});
   const [isRemoveFormValidated, setIsRemoveFormValidated] = useState(false);
   const [removeRfid, setRemoveRfid] = useState("");
+  const [editData, setEditData] = useState({
+    admin: "",
+    rfid: "",
+    name: "",
+    rollnumber: "",
+    password: "",
+  });
+  const [isEditSubmited, setIsEditSubmited] = useState(false);
+  const [isEditValidated, setIsEditValidated] = useState(false);
+  const [editError, setEditError] = useState({});
   const removeFormInputRef = useRef(null);
-  async function initialFetch() {
+  async function initialFetch(pageNumber = 1) {
     try {
       setIsLoading(true);
       const result = await axios.get(
-        `http://localhost:9000/client/getuser?pageNumber=${1}&pageLimit=${pageSize}`
+        `http://localhost:9000/client/getuser?pageNumber=${pageNumber}&pageLimit=${pageSize}`
       );
       setTotalUsers(result.data?.totalUsers);
       setData(result.data?.users);
@@ -74,6 +84,15 @@ function HomePage() {
   };
   const handleEditForm = (e) => {
     e.preventDefault();
+    setEditData({
+      admin: adminUserName,
+      rfid: e.target[0].value,
+      name: e.target[1].value,
+      rollnumber: e.target[2].value,
+      password: e.target[3].value,
+    });
+    setIsEditValidated(false);
+    setIsEditSubmited(true);
   };
   const handleRemove = (index) => {
     setIsRemoveClicked(true);
@@ -95,6 +114,50 @@ function HomePage() {
     setRemoveFormError(error);
     return true;
   };
+  const editValidater = () => {
+    const error = {};
+    if (!editData.rfid) {
+      error.rfidError = "RFID required";
+    }
+    if (!editData.name) {
+      error.nameError = "Name required";
+    }
+    if (!editData.rollnumber) {
+      error.rollNumberError = "Roll Number Required";
+    }
+    if (!editData.password) {
+      error.adminError = "Admin Passowrd Required";
+    }
+    setEditError(error);
+    return true;
+  };
+  useEffect(() => {
+    if (isEditSubmited) {
+      setIsEditValidated(editValidater());
+      setIsEditSubmited(false);
+    }
+  }, [isEditSubmited]);
+  useEffect(() => {
+    if (isEditValidated && Object.keys(editError).length === 0) {
+      (async () => {
+        console.log(pageData[editIndex]._id);
+        try {
+          const result = await axios.put(
+            `http://localhost:9000/client/update/${pageData[editIndex]._id}`,
+            editData
+          );
+          if (result.data?.status) {
+            initialFetch(presentPage);
+            setIsEditClicked(false);
+          } else {
+            setEditError({ adminError: result.data?.message });
+          }
+        } catch (err) {
+          console.log(err.message);
+        }
+      })();
+    }
+  }, [isEditValidated]);
   useEffect(() => {
     if (isRemoveSubmited) {
       setIsRemoveFormValidated(removeFormValidater());
@@ -182,6 +245,7 @@ function HomePage() {
                         onClick={() => {
                           handleRemove(index);
                         }}
+                        key={editIndex}
                       >
                         Remove
                       </button>
@@ -211,22 +275,27 @@ function HomePage() {
         <form
           className={`edit-form ${isEditClicked ? `open` : ``}`}
           onSubmit={handleEditForm}
+          key={editIndex}
         >
+          <p>{editError.rfidError}</p>
           <input
             type="text"
             defaultValue={pageData[editIndex]?.rfid}
             placeholder="RFID NO.."
           />
+          <p>{editError.nameError}</p>
           <input
             type="text"
             defaultValue={pageData[editIndex]?.name}
             placeholder="Student Name.."
           />
+          <p>{editError.rollNumberError}</p>
           <input
             type="text"
             defaultValue={pageData[editIndex]?.rollnumber}
             placeholder="Roll Number.."
           />
+          <p>{editError.adminError}</p>
           <label>
             <input type="password" placeholder="Admin Password" />
             <button>see</button>
