@@ -83,6 +83,48 @@ class UserService {
       return {status:false , message:"Server Error"};
     }
   }
+
+
+
+  static async Recharge(rfid , ammount){
+    try {
+      const pipeLine = [
+        {
+          $match: { rfid: rfid },
+        },
+        {
+          $project: {
+            _id: 0,
+            balance: 1 
+          },
+        },
+      ];
+      const [rechargeHistory] = await addUserModel.aggregate(pipeLine);
+      console.log(rechargeHistory)
+      if(!rechargeHistory){
+        return {status:false , message:"User Not Found"}
+      }else{
+        const now = new Date();
+        const currentTime =`${((now.getHours() % 12) || 12).toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} ${now.getHours() >= 12 ? 'PM' : 'AM'}`;
+        const currentDate = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
+        await addUserModel.updateOne({rfid}, {
+          $push: {
+            history: {
+              ammount: ammount,
+              date: currentDate,
+              time:currentTime
+            },
+          },
+          $set: {
+            balance: parseInt(rechargeHistory.balance) + parseInt( ammount )
+          },
+        });
+        return {status:true , message:"Recharge Successfull"}
+      }
+    } catch (error) {
+      return {status:false , message:"Server Error"}
+    }
+  }
 }
 
 module.exports = UserService;

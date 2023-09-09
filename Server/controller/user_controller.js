@@ -52,7 +52,7 @@ exports.editDetails = async (req , res) =>{
     const { admin , name , rfid , rollnumber , password} = req.body;
     const isEdited = await UserService.editUserDetails(admin , id , name , rfid , rollnumber , password);
     if(!isEdited.status){
-      res.status(400).json(isEdited);
+      res.json(isEdited);
     }
     else{
       res.status(200).json(isEdited);
@@ -62,5 +62,20 @@ exports.editDetails = async (req , res) =>{
   }
 }
 
+
+exports.rechargeUser = async (req , res) =>{
+  try {
+    const {rfid , ammount} = req.body;
+   
+    const isRecharged = await UserService.Recharge(rfid , ammount);
+    if(!isRecharged){
+      res.status(500).json(isRecharged);
+    }else{
+      res.status(200).json(isRecharged)
+    }
+  } catch (error) {
+    res.status(500).json(isRecharged);
+  }
+}
 
 
