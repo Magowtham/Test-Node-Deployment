@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "../Css/HomePage.css";
 import ReactPaginate from "react-paginate";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import RechargeHistory from "./RechargeHistory";
 function HomePage() {
+  const navigate = useNavigate();
   const [adminUserName, setAdminUserName] = useState("gowtham");
-  const [data, setData] = useState([]);
   const [pageData, setPageData] = useState([]);
   const [pageSize] = useState(5);
   const [presentPage, setPresentPage] = useState(0);
@@ -29,35 +31,19 @@ function HomePage() {
   const [isEditValidated, setIsEditValidated] = useState(false);
   const [editError, setEditError] = useState({});
   const removeFormInputRef = useRef(null);
-  async function initialFetch(pageNumber = 1) {
+  const handleRechargeHistory = () => {
+    navigate("/rechargeHistory");
+  };
+  const fetchPageData = async (pageNumber, totalCount) => {
     try {
       setIsLoading(true);
       const result = await axios.get(
         `http://localhost:9000/client/getuser?pageNumber=${pageNumber}&pageLimit=${pageSize}`
       );
-      setTotalUsers(result.data?.totalUsers);
-      setData(result.data?.users);
-      setPageData(result.data?.users);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-  const fetchPageData = async (pageNumber) => {
-    try {
-      if (data.length < pageNumber * pageSize) {
-        setIsLoading(true);
-        const result = await axios.get(
-          `http://localhost:9000/client/getuser?pageNumber=${pageNumber}&pageLimit=${pageSize}`
-        );
-        setPageData(result.data?.users);
-        setData((data) => [...data, ...result.data?.users]);
-      } else {
-        const end = pageNumber * pageSize;
-        const start = end - pageSize;
-        setPageData(data.slice(start, end));
+      if (totalCount) {
+        setTotalUsers(result?.data.totalUsers);
       }
+      setPageData(result?.data.users);
     } catch (err) {
       console.log(err);
     } finally {
@@ -65,7 +51,7 @@ function HomePage() {
     }
   };
   const handlePageChange = (e) => {
-    fetchPageData(e.selected + 1);
+    fetchPageData(e.selected + 1, false, false, null, false, null, true);
     setPresentPage(e.selected + 1);
   };
   const handleEdit = (index) => {
@@ -131,6 +117,13 @@ function HomePage() {
     setEditError(error);
     return true;
   };
+  let triggerOnce = true;
+  useEffect(() => {
+    if (triggerOnce) {
+      fetchPageData(1, true);
+      triggerOnce = false;
+    }
+  }, []);
   useEffect(() => {
     if (isEditSubmited) {
       setIsEditValidated(editValidater());
@@ -147,8 +140,8 @@ function HomePage() {
             editData
           );
           if (result.data?.status) {
-            initialFetch(presentPage);
             setIsEditClicked(false);
+            fetchPageData(presentPage, false);
           } else {
             setEditError({ adminError: result.data?.message });
           }
@@ -178,7 +171,7 @@ function HomePage() {
           );
           if (result.data?.status) {
             setIsRemoveClicked(false);
-            initialFetch();
+            fetchPageData(presentPage, true);
           } else {
             setRemoveFormError({ adminError: result.data?.message });
           }
@@ -194,9 +187,63 @@ function HomePage() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   });
-  useEffect(() => {
-    initialFetch();
-  }, []);
+  function UserInfoTable() {
+    return (
+      <>
+        <table>
+          <thead>
+            <tr>
+              <th>SL. NO.</th>
+              <th>RFID NO.</th>
+              <th>Student Name</th>
+              <th>Roll Number</th>
+              <th>Balance Amount</th>
+            </tr>
+          </thead>
+          {isLoading ? (
+            <tbody>
+              <tr>
+                <td>Loading...</td>
+              </tr>
+            </tbody>
+          ) : (
+            <tbody>
+              {pageData?.map((user, index) => (
+                <tr key={index + 1}>
+                  <td>{presentPage * pageSize + (index + 1)}</td>
+                  <td>{user?.rfid}</td>
+                  <td>{user?.name}</td>
+                  <td>{user?.rollnumber}</td>
+                  <td>{user?.balance}</td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        handleEdit(index);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleRemove(index);
+                      }}
+                      key={editIndex}
+                    >
+                      Remove
+                    </button>
+                    <button onClick={handleRechargeHistory}>
+                      Recharge History
+                    </button>
+                    <button>Expense History </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+        </table>
+      </>
+    );
+  }
   return (
     <>
       <div className="home-page-container">
@@ -208,53 +255,10 @@ function HomePage() {
         ></div>
         <nav></nav>
         <div className="sub-container">
-          <table>
-            <thead>
-              <tr>
-                <th>SL. NO.</th>
-                <th>RFID NO.</th>
-                <th>Student Name</th>
-                <th>Roll Number</th>
-                <th>Balance Amount</th>
-              </tr>
-            </thead>
-            {isLoading ? (
-              <tbody>
-                <tr>
-                  <td>Loading...</td>
-                </tr>
-              </tbody>
-            ) : (
-              <tbody>
-                {pageData.map((user, index) => (
-                  <tr key={index + 1}>
-                    <td>{presentPage * pageSize + (index + 1)}</td>
-                    <td>{user.rfid}</td>
-                    <td>{user.name}</td>
-                    <td>{user.rollnumber}</td>
-                    <td>{user.balance}</td>
-                    <td>
-                      <button
-                        onClick={() => {
-                          handleEdit(index);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleRemove(index);
-                        }}
-                        key={editIndex}
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            )}
-          </table>
+          <Routes>
+            <Route exact path="/" Component={UserInfoTable} />
+            <Route path="/rechargeHistory" Component={RechargeHistory} />
+          </Routes>
           <ReactPaginate
             previousLabel={"prev"}
             nextLabel={"next"}
