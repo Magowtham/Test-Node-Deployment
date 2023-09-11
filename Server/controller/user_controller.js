@@ -24,58 +24,79 @@ exports.getUser = async (req, res) => {
     if (result.status) {
       res.json(result);
     }
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ status: false, message: "Unable To Find Users" });
   }
 };
 
-
-
-exports.deleteUser = async (req , res) =>{
+exports.deleteUser = async (req, res) => {
   try {
-    const {name , rfid , password} = req.body;
-  const isDelete = await UserService.deleteUserData(name , rfid , password);
-  if(!isDelete.status){
-    res.status(400).json(isDelete);
-  }else{
-    res.status(200).json(isDelete);
-  }
+    const { name, rfid, password } = req.body;
+    const isDelete = await UserService.deleteUserData(name, rfid, password);
+    if (!isDelete.status) {
+      res.json(isDelete);
+    } else {
+      res.status(200).json(isDelete);
+    }
   } catch (error) {
-    res.status(500).json({status:false , message:"Server Error"});
+    res.status(500).json({ status: false, message: "Server Error" });
   }
-}
+};
 
-
-exports.editDetails = async (req , res) =>{
+exports.editDetails = async (req, res) => {
   try {
     const id = req.params.id;
-    const { admin , name , rfid , rollnumber , password} = req.body;
-    const isEdited = await UserService.editUserDetails(admin , id , name , rfid , rollnumber , password);
-    if(!isEdited.status){
+    const { admin, name, rfid, rollnumber, password } = req.body;
+    const isEdited = await UserService.editUserDetails(
+      admin,
+      id,
+      name,
+      rfid,
+      rollnumber,
+      password
+    );
+    if (!isEdited.status) {
       res.json(isEdited);
-    }
-    else{
+    } else {
       res.status(200).json(isEdited);
     }
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({ status: false, message: "Server Error" });
   }
-}
+};
 
-
-exports.rechargeUser = async (req , res) =>{
+exports.rechargeUser = async (req, res) => {
   try {
-    const {rfid , ammount} = req.body;
-   
-    const isRecharged = await UserService.Recharge(rfid , ammount);
-    if(!isRecharged){
-      res.status(500).json(isRecharged);
-    }else{
-      res.status(200).json(isRecharged)
+    const { rfid, amount } = req.body;
+
+    const isRecharged = await UserService.Recharge(rfid, amount);
+    if (!isRecharged) {
+      res.json(isRecharged);
+    } else {
+      res.status(200).json(isRecharged);
     }
   } catch (error) {
-    res.status(500).json(isRecharged);
+    res.status(500).json({ status: false, message: "Server Error" });
   }
-}
+};
 
+exports.getRechargeHistory = async (req, res) => {
+  try {
+    const rfid = req.query?.rfid;
+    const pageStart = req.query?.pageStart;
+    const pageSize = req.query?.pageSize;
 
+    const isRechargeHistory = await UserService.rechargePagination(
+      rfid,
+      pageStart,
+      pageSize
+    );
+    if (!isRechargeHistory?.status) {
+      res.json(isRechargeHistory);
+    } else {
+      res.status(200).json(isRechargeHistory);
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Server Error" });
+  }
+};
