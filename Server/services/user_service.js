@@ -83,7 +83,7 @@ class UserService {
     }
   }
 
-  static async Recharge(rfid, ammount) {
+  static async Recharge(rfid, amount) {
     try {
       const pipeLine = [
         {
@@ -116,13 +116,12 @@ class UserService {
           {
             $push: {
               rechargeHistory: {
-                ammount: ammount,
-                date: currentDate,
-                time: currentTime,
+                $each: [{ date: currentDate, time: currentTime, amount }],
+                $position: 0,
               },
             },
             $set: {
-              balance: parseInt(rechargeHistory.balance) + parseInt(ammount),
+              balance: parseInt(rechargeHistory.balance) + parseInt(amount),
             },
           }
         );
@@ -138,7 +137,7 @@ class UserService {
       const pipeLine = [
         {
           $match: {
-            rfid: rfid,
+            rfid,
           },
         },
         {
