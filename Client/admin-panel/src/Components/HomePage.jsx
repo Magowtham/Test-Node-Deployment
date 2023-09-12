@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import axios from "axios";
 import "../Css/HomePage.css";
 import ReactPaginate from "react-paginate";
@@ -31,8 +31,8 @@ function HomePage() {
   const [isEditValidated, setIsEditValidated] = useState(false);
   const [editError, setEditError] = useState({});
   const removeFormInputRef = useRef(null);
-  const handleRechargeHistory = () => {
-    navigate("/rechargeHistory");
+  const handleRechargeHistory = (rfid) => {
+    navigate("/rechargeHistory", { state: { rfid } });
   };
   const fetchPageData = async (pageNumber, totalCount) => {
     try {
@@ -44,14 +44,14 @@ function HomePage() {
         setTotalUsers(result?.data.totalUsers);
       }
       setPageData(result?.data.users);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
   };
-  const handlePageChange = (e) => {
-    fetchPageData(e.selected + 1, false, false, null, false, null, true);
+  const handleHomePageChange = (e) => {
+    fetchPageData(e.selected + 1, false);
     setPresentPage(e.selected + 1);
   };
   const handleEdit = (index) => {
@@ -231,7 +231,11 @@ function HomePage() {
                     >
                       Remove
                     </button>
-                    <button onClick={handleRechargeHistory}>
+                    <button
+                      onClick={() => {
+                        handleRechargeHistory(user?.rfid);
+                      }}
+                    >
                       Recharge History
                     </button>
                     <button>Expense History </button>
@@ -241,9 +245,22 @@ function HomePage() {
             </tbody>
           )}
         </table>
+        <div className="pagination-sec">
+          <ReactPaginate
+            previousLabel={"prev"}
+            nextLabel={"next"}
+            breakLabel={"..."}
+            pageCount={Math.round(totalUsers / pageSize)}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={2}
+            onPageChange={handleHomePageChange}
+            containerClassName={"pagination-container"}
+          />
+        </div>
       </>
     );
   }
+
   return (
     <>
       <div className="home-page-container">
@@ -257,18 +274,8 @@ function HomePage() {
         <div className="sub-container">
           <Routes>
             <Route exact path="/" Component={UserInfoTable} />
-            <Route path="/rechargeHistory" Component={RechargeHistory} />
+            <Route path="/rechargeHistory" element={<RechargeHistory />} />
           </Routes>
-          <ReactPaginate
-            previousLabel={"prev"}
-            nextLabel={"next"}
-            breakLabel={"..."}
-            pageCount={Math.round(totalUsers / pageSize)}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={2}
-            onPageChange={handlePageChange}
-            containerClassName={"pagination-container"}
-          />
         </div>
         <div className="footer-sec">
           <button>Daily History</button>

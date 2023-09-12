@@ -49,6 +49,9 @@ nav {
   border: 1px solid black;
   padding: 10px;
 }
+.pagination-sec.hidden {
+  display: none;
+}
 .pagination-container {
   margin: auto;
 }
