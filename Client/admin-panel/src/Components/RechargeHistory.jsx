@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import Paginater from "./Paginater";
 
 function RechargeHistory() {
   const { state } = useLocation();
@@ -47,6 +48,7 @@ function RechargeHistory() {
           ))}
         </tbody>
       </table>
+      <Paginater />
     </>
   );
 }

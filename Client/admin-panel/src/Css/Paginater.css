@@ -1,0 +1,10 @@
+.pagination-container {
+  margin: auto;
+}
+.pagination-container {
+  display: flex;
+  max-width: 300px;
+  border: 2px solid red;
+  justify-content: space-between;
+  list-style: none;
+}
