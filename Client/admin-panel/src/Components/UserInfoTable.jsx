@@ -7,6 +7,9 @@ import "../Css/UserInfoTable.css";
 function UserInfoTable({ adminUserName }) {
   const navigate = useNavigate();
   const [isTableLoading, setIsTableLoading] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editRfid, setEditRfid] = useState("");
+  const [editRollNumber, setEditRollNumber] = useState("");
   const [pageData, setPageData] = useState([]);
   const [pageSize] = useState(5);
   const [presentPage, setPresentPage] = useState(0);
@@ -30,7 +33,7 @@ function UserInfoTable({ adminUserName }) {
   const [removeFormError, setRemoveFormError] = useState({});
   const [removeRfid, setRemoveRfid] = useState("");
   const removeFormInputRef = useRef(null);
-
+  const editPasswordRef = useRef(null);
   const fetchPageData = async (pageNumber, totalCount) => {
     try {
       setIsTableLoading(true);
@@ -88,6 +91,10 @@ function UserInfoTable({ adminUserName }) {
   const handleEdit = (index) => {
     setIsEditClicked(true);
     setEditIndex(index);
+    setEditRfid(pageData[index]?.rfid);
+    setEditName(pageData[index]?.name);
+    setEditRollNumber(pageData[index]?.rollnumber);
+    editPasswordRef.current.value = "";
   };
   const removeFormValidater = () => {
     const error = {};
@@ -118,6 +125,18 @@ function UserInfoTable({ adminUserName }) {
   const handleOverlay = () => {
     setIsEditClicked(false);
     setIsRemoveClicked(false);
+  };
+  const handleEditInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "name") {
+      setEditName(value);
+    }
+    if (name === "rfid") {
+      setEditRfid(value);
+    }
+    if (name === "rollnumber") {
+      setEditRollNumber(value);
+    }
   };
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
@@ -261,29 +280,38 @@ function UserInfoTable({ adminUserName }) {
       <form
         className={`edit-form ${isEditClicked ? `open` : ``}`}
         onSubmit={handleEditForm}
-        key={editIndex}
       >
         <p>{editError.rfidError}</p>
         <input
           type="text"
-          defaultValue={pageData[editIndex]?.rfid}
+          name="rfid"
+          value={editRfid}
+          onChange={handleEditInputChange}
           placeholder="RFID NO.."
         />
         <p>{editError.nameError}</p>
         <input
           type="text"
-          defaultValue={pageData[editIndex]?.name}
+          name="name"
+          value={editName}
+          onChange={handleEditInputChange}
           placeholder="Student Name.."
         />
         <p>{editError.rollNumberError}</p>
         <input
           type="text"
-          defaultValue={pageData[editIndex]?.rollnumber}
+          name="rollnumber"
+          value={editRollNumber}
+          onChange={handleEditInputChange}
           placeholder="Roll Number.."
         />
         <p>{editError.adminError}</p>
         <label>
-          <input type="password" placeholder="Admin Password" />
+          <input
+            type="password"
+            ref={editPasswordRef}
+            placeholder="Admin Password"
+          />
           <button>see</button>
         </label>
         <button type="submit">Save</button>
