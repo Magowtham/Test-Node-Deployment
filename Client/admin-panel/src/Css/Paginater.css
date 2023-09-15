@@ -7,4 +7,12 @@
   border: 2px solid red;
   justify-content: space-between;
   list-style: none;
+  width: 300px;
+}
+
+.pagination-container {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
 }

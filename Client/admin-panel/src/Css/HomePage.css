@@ -29,9 +29,24 @@
 }
 nav {
   background: blue;
-  height: 20px;
 }
 .user-table-sec {
   border: 2px solid green;
   height: 80%;
+  position: relative;
+}
+
+.add-user-form {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 999;
+  visibility: hidden;
+}
+
+.add-user-form.open {
+  visibility: visible;
 }

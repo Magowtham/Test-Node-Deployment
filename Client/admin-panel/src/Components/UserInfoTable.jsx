@@ -4,12 +4,18 @@ import axios from "axios";
 import Paginater from "./Paginater";
 import "../Css/UserInfoTable.css";
 
-function UserInfoTable({ adminUserName }) {
+function UserInfoTable({
+  adminUserName,
+  searchData,
+  searchRefresh,
+  initialRefresh,
+  inputClear,
+}) {
   const navigate = useNavigate();
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [pageData, setPageData] = useState([]);
-  const [pageSize] = useState(5);
-  const [presentPage, setPresentPage] = useState(1);
+  const [pageSize] = useState(15);
+  const [presentPage, setPresentPage] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isEditClicked, setIsEditClicked] = useState(false);
   const [isRemoveClicked, setIsRemoveClicked] = useState(false);
@@ -55,7 +61,8 @@ function UserInfoTable({ adminUserName }) {
   };
   const handleTablePageChange = (e) => {
     fetchPageData(e.selected, false);
-    setPresentPage(e.selected + 1);
+    setPresentPage(e.selected);
+    inputClear(true);
   };
 
   const editValidater = () => {
@@ -89,6 +96,7 @@ function UserInfoTable({ adminUserName }) {
   };
 
   const handleEdit = (index) => {
+    inputClear(true);
     setIsEditClicked(true);
     setEditIndex(index);
     setEditName(pageData[index]?.name);
@@ -123,6 +131,7 @@ function UserInfoTable({ adminUserName }) {
     setIsRemoveSubmited(true);
   };
   const handleRemove = (index) => {
+    inputClear(true);
     setIsRemoveClicked(true);
     setRemoveFormError({});
     removeFormInputRef.current.value = "";
@@ -141,7 +150,6 @@ function UserInfoTable({ adminUserName }) {
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
       (async () => {
-        console.log(pageData[editIndex]._id);
         try {
           const result = await axios.put(
             `http://localhost:9000/client/update/${pageData[editIndex]._id}`,
@@ -203,6 +211,17 @@ function UserInfoTable({ adminUserName }) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   });
+  useEffect(() => {
+    if (searchData.length !== 0) {
+      setPageData(searchData);
+    }
+  }, [searchData]);
+
+  useEffect(() => {
+    if (searchRefresh && !initialRefresh) {
+      fetchPageData(presentPage, false);
+    }
+  }, [searchRefresh]);
   let triggerOnce = true;
   useEffect(() => {
     if (triggerOnce) {
@@ -237,7 +256,7 @@ function UserInfoTable({ adminUserName }) {
           <tbody>
             {pageData?.map((user, index) => (
               <tr key={index + 1}>
-                <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
+                <td>{presentPage * pageSize + (index + 1)}</td>
                 <td>{user?.rfid}</td>
                 <td>{user?.name}</td>
                 <td>{user?.rollnumber}</td>

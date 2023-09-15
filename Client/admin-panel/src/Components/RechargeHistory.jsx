@@ -7,7 +7,7 @@ function RechargeHistory() {
   const { state } = useLocation();
   const [pageData, setPageData] = useState([]);
   const [totalHistoryCount, setTotalHistoryCount] = useState(0);
-  const [pageSize] = useState(5);
+  const [pageSize] = useState(15);
   const [presentPage, setPresentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const fetchPageData = async (pageNumber, totalCount) => {
