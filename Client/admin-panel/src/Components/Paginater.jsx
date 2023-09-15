@@ -8,7 +8,7 @@ function Paginater({ totalElements, pageSize, handlePageChange }) {
         previousLabel={"prev"}
         nextLabel={"next"}
         breakLabel={"..."}
-        pageCount={Math.round(totalElements / pageSize)}
+        pageCount={Math.ceil(totalElements / pageSize)}
         marginPagesDisplayed={2}
         pageRangeDisplayed={2}
         onPageChange={handlePageChange}

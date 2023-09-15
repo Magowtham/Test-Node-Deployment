@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useFetcher, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Paginater from "./Paginater";
 import "../Css/UserInfoTable.css";
@@ -7,15 +7,15 @@ import "../Css/UserInfoTable.css";
 function UserInfoTable({ adminUserName }) {
   const navigate = useNavigate();
   const [isTableLoading, setIsTableLoading] = useState(false);
-  const [editName, setEditName] = useState("");
-  const [editRfid, setEditRfid] = useState("");
-  const [editRollNumber, setEditRollNumber] = useState("");
   const [pageData, setPageData] = useState([]);
   const [pageSize] = useState(5);
-  const [presentPage, setPresentPage] = useState(0);
+  const [presentPage, setPresentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isEditClicked, setIsEditClicked] = useState(false);
   const [isRemoveClicked, setIsRemoveClicked] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editRfid, setEditRfid] = useState("");
+  const [editRollNumber, setEditRollNumber] = useState("");
   const [editIndex, setEditIndex] = useState(null);
   const [editData, setEditData] = useState({
     admin: "",
@@ -54,7 +54,7 @@ function UserInfoTable({ adminUserName }) {
     navigate("/rechargeHistory", { state: { rfid } });
   };
   const handleTablePageChange = (e) => {
-    fetchPageData(e.selected + 1, false);
+    fetchPageData(e.selected, false);
     setPresentPage(e.selected + 1);
   };
 
@@ -91,10 +91,22 @@ function UserInfoTable({ adminUserName }) {
   const handleEdit = (index) => {
     setIsEditClicked(true);
     setEditIndex(index);
-    setEditRfid(pageData[index]?.rfid);
     setEditName(pageData[index]?.name);
+    setEditRfid(pageData[index]?.rfid);
     setEditRollNumber(pageData[index]?.rollnumber);
     editPasswordRef.current.value = "";
+  };
+  const handleEditInput = (e) => {
+    const { name, value } = e.target;
+    if (name === "rfid") {
+      setEditRfid(value);
+    }
+    if (name === "name") {
+      setEditName(value);
+    }
+    if (name === "rollnumber") {
+      setEditRollNumber(value);
+    }
   };
   const removeFormValidater = () => {
     const error = {};
@@ -125,18 +137,6 @@ function UserInfoTable({ adminUserName }) {
   const handleOverlay = () => {
     setIsEditClicked(false);
     setIsRemoveClicked(false);
-  };
-  const handleEditInputChange = (event) => {
-    const { name, value } = event.target;
-    if (name === "name") {
-      setEditName(value);
-    }
-    if (name === "rfid") {
-      setEditRfid(value);
-    }
-    if (name === "rollnumber") {
-      setEditRollNumber(value);
-    }
   };
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
@@ -206,7 +206,7 @@ function UserInfoTable({ adminUserName }) {
   let triggerOnce = true;
   useEffect(() => {
     if (triggerOnce) {
-      fetchPageData(1, true);
+      fetchPageData(0, true);
       triggerOnce = false;
     }
   }, []);
@@ -237,7 +237,7 @@ function UserInfoTable({ adminUserName }) {
           <tbody>
             {pageData?.map((user, index) => (
               <tr key={index + 1}>
-                <td>{presentPage * pageSize + (index + 1)}</td>
+                <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
                 <td>{user?.rfid}</td>
                 <td>{user?.name}</td>
                 <td>{user?.rollnumber}</td>
@@ -286,7 +286,7 @@ function UserInfoTable({ adminUserName }) {
           type="text"
           name="rfid"
           value={editRfid}
-          onChange={handleEditInputChange}
+          onChange={handleEditInput}
           placeholder="RFID NO.."
         />
         <p>{editError.nameError}</p>
@@ -294,7 +294,7 @@ function UserInfoTable({ adminUserName }) {
           type="text"
           name="name"
           value={editName}
-          onChange={handleEditInputChange}
+          onChange={handleEditInput}
           placeholder="Student Name.."
         />
         <p>{editError.rollNumberError}</p>
@@ -302,14 +302,14 @@ function UserInfoTable({ adminUserName }) {
           type="text"
           name="rollnumber"
           value={editRollNumber}
-          onChange={handleEditInputChange}
+          onChange={handleEditInput}
           placeholder="Roll Number.."
         />
         <p>{editError.adminError}</p>
         <label>
           <input
-            type="password"
             ref={editPasswordRef}
+            type="password"
             placeholder="Admin Password"
           />
           <button>see</button>

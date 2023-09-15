@@ -6,14 +6,20 @@ import Paginater from "./Paginater";
 function RechargeHistory() {
   const { state } = useLocation();
   const [pageData, setPageData] = useState([]);
+  const [totalHistoryCount, setTotalHistoryCount] = useState(0);
   const [pageSize] = useState(5);
+  const [presentPage, setPresentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const fetchPageData = async (pageNumber, totalCount) => {
+    console.log(pageNumber);
     try {
-      setIsLoading(true);
       const result = await axios.get(
         `http://localhost:9000/client/recharge_history?rfid=${state.rfid}&pageStart=${pageNumber}&pageSize=${pageSize}`
       );
+      if (totalCount) {
+        setTotalHistoryCount(result.data?.historyLength);
+      }
+      console.log(result.data);
       setPageData(result.data?.history);
     } catch (error) {
       console.log(error);
@@ -21,10 +27,14 @@ function RechargeHistory() {
       setIsLoading(false);
     }
   };
+  const handleHistoryPage = (e) => {
+    fetchPageData(e.selected, false);
+    setPresentPage(e.selected + 1);
+  };
   let triggerOnce = false;
   useEffect(() => {
     if (!triggerOnce) {
-      fetchPageData(1, true);
+      fetchPageData(0, true);
       triggerOnce = true;
     }
   }, []);
@@ -33,6 +43,7 @@ function RechargeHistory() {
       <table>
         <thead>
           <tr>
+            <th>SL. NO.</th>
             <th>Date</th>
             <th>Time</th>
             <th>Amount</th>
@@ -41,6 +52,7 @@ function RechargeHistory() {
         <tbody>
           {pageData?.map((element, index) => (
             <tr key={index}>
+              <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
               <td>{element?.date}</td>
               <td>{element?.time}</td>
               <td>{element?.amount}</td>
@@ -48,7 +60,11 @@ function RechargeHistory() {
           ))}
         </tbody>
       </table>
-      <Paginater />
+      <Paginater
+        totalElements={totalHistoryCount}
+        pageSize={pageSize}
+        handlePageChange={handleHistoryPage}
+      />
     </>
   );
 }
