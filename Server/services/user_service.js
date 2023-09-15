@@ -24,7 +24,7 @@ class UserService {
     try {
       const users = await addUserModel
         .find()
-        .skip((pageStart - 1) * pageSize)
+        .skip(pageStart * pageSize)
         .limit(pageSize);
       const totalUsers = await addUserModel.countDocuments();
       return { status: true, totalUsers, users };
@@ -60,6 +60,9 @@ class UserService {
   static async editUserDetails(admin, id, name, rfid, rollnumber, password) {
     try {
       const adminData = await authModel.findOne({ name: admin });
+      if (!adminData) {
+        return { status: false, message: "Unauthorised Admin" };
+      }
       const isAdmin = await bcrypt.compare(password, adminData.password);
       if (!isAdmin) {
         return { status: false, message: "Incorrect Password" };
@@ -146,9 +149,12 @@ class UserService {
             historySlice: {
               $slice: [
                 `$rechargeHistory`,
-                parseInt(pageStart),
+                parseInt(pageStart * pageSize),
                 parseInt(pageSize),
               ],
+            },
+            rechargeHistoryLength: {
+              $size: "$rechargeHistory",
             },
           },
         },
@@ -157,7 +163,11 @@ class UserService {
       if (!result) {
         return { status: false, message: "User Not Found" };
       } else {
-        return { status: true, history: result?.historySlice };
+        return {
+          status: true,
+          history: result?.historySlice,
+          historyLength: result?.rechargeHistoryLength,
+        };
       }
     } catch (error) {
       throw error;

@@ -17,7 +17,7 @@ exports.addUser = async (req, res) => {
 };
 
 exports.getUser = async (req, res) => {
-  const pageNumber = parseInt(req.query.pageNumber) || 1;
+  const pageNumber = parseInt(req.query.pageNumber) || 0;
   const pageLimit = parseInt(req.query.pageLimit) || 5;
   try {
     const result = await UserService.userPagination(pageNumber, pageLimit);
