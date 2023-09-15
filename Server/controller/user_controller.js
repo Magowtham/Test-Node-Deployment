@@ -1,3 +1,4 @@
+const { query } = require("express");
 const UserService = require("../services/user_service");
 
 exports.addUser = async (req, res) => {
@@ -95,6 +96,20 @@ exports.getRechargeHistory = async (req, res) => {
       res.json(isRechargeHistory);
     } else {
       res.status(200).json(isRechargeHistory);
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Server Error" });
+  }
+};
+
+exports.searchUser = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const searchResult = await UserService.search(query);
+    if (!searchResult.status) {
+      res.json(searchResult);
+    } else {
+      res.status(200).json(searchResult);
     }
   } catch (error) {
     res.status(500).json({ status: false, message: "Server Error" });

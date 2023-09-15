@@ -173,6 +173,33 @@ class UserService {
       throw error;
     }
   }
+  static async search(query) {
+    try {
+      const results = await addUserModel.find(
+        {
+          $or: [
+            {
+              rfid: { $regex: `^${query}`, $options: "i" },
+            },
+            {
+              name: { $regex: `^${query}`, $options: "i" },
+            },
+            {
+              rollnumber: { $regex: `^${query}`, $options: "i" },
+            },
+          ],
+        },
+        { name: 1, rfid: 1, rollnumber: 1, balance: 1, _id: 0 }
+      );
+      if (results.length === 0) {
+        return { status: false, message: "No Users Found" };
+      } else {
+        return { status: true, users: results };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = UserService;

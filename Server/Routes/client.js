@@ -9,5 +9,6 @@ routes.post("/register", authController.Register);
 routes.post("/delete", userController.deleteUser);
 routes.put("/update/:id", userController.editDetails);
 routes.get("/recharge_history", userController.getRechargeHistory);
+routes.get("/search", userController.searchUser);
 
 module.exports = routes;
