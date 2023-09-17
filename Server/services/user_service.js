@@ -1,8 +1,8 @@
 const addUserModel = require("../models/add_user_model");
 const authModel = require("../models/auth_model");
+const currentDateTime = require("./date");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-
 class UserService {
   //Add New Users
   static async newUser(name, rfid, rollnumber) {
@@ -103,17 +103,7 @@ class UserService {
       if (!rechargeHistory) {
         return { status: false, message: "User Not Found" };
       } else {
-        const now = new Date();
-        const currentTime = `${(now.getHours() % 12 || 12)
-          .toString()
-          .padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")} ${
-          now.getHours() >= 12 ? "PM" : "AM"
-        }`;
-        const currentDate = `${now.getDate().toString().padStart(2, "0")}-${(
-          now.getMonth() + 1
-        )
-          .toString()
-          .padStart(2, "0")}-${now.getFullYear()}`;
+        const { currentTime, currentDate } = currentDateTime();
         await addUserModel.updateOne(
           { rfid },
           {
@@ -192,12 +182,109 @@ class UserService {
         { name: 1, rfid: 1, rollnumber: 1, balance: 1, _id: 0 }
       );
       if (results.length === 0) {
-        return { status: false, message: "No Users Found" };
+        return { status: false, message: "No Results Found" };
       } else {
         return { status: true, users: results };
       }
     } catch (error) {
       throw error;
+    }
+  }
+  static usersHistory = [];
+  static intervalTime = 3000;
+  static async amountDeducter(index, rfid, res) {
+    const timer = setInterval(() => {
+      if (this.usersHistory[index].balance < 10) {
+        res
+          .status(200)
+          .json({ status: false, message: "Insufficient Balance" });
+      }
+      this.usersHistory[index].balance -= 1;
+      console.log(this.usersHistory[index].balance);
+    }, this.intervalTime);
+    this.usersHistory[index].timerId = timer[Symbol.toPrimitive]();
+  }
+  static async startAmountReducter(rfid, res) {
+    try {
+      const dbResult = await addUserModel.findOne(
+        { rfid },
+        { balance: 1, _id: 0 }
+      );
+      console.log(dbResult);
+      if (!dbResult) {
+        return { status: false, message: "User Not Exists" };
+      }
+
+      if (Number(dbResult.balance) < 10) {
+        return { status: false, message: "Insufficeint Balance" };
+      }
+      const { currentDate, currentTime } = currentDateTime();
+      this.usersHistory.push({
+        date: currentDate,
+        callStartTime: currentTime,
+        balance: Number(dbResult.balance),
+      });
+      this.amountDeducter(this.usersHistory.length - 1, rfid, res);
+      return { status: true, ID: this.usersHistory.length - 1 };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  static async dial(rfid) {
+    try {
+      const historyResult = this.usersHistory.filter(
+        (user) => user.rfid === rfid
+      );
+      if (historyResult.length === 0) {
+        const dbResult = await addUserModel.findOne(
+          { rfid },
+          { balance: 1, _id: 0 }
+        );
+        if (!dbResult) {
+          return { status: false, message: "User Not Exists" };
+        }
+        if (Number(dbResult.balance) < 10) {
+          return { status: false, message: "Insufficeint Balance" };
+        }
+        this.usersHistory.push({
+          rfid,
+          balance: Number(dbResult.balance),
+          currentDate: currentDateTime().currentDate,
+          callStartTime: currentDateTime().currentTime,
+        });
+        const timeId = setInterval(() => {
+          this.usersHistory[this.usersHistory.length - 1].balance -= 1;
+          this.usersHistory;
+          console.log(this.usersHistory);
+        }, this.intervalTime);
+        this.usersHistory[this.usersHistory.length - 1].timerId =
+          timeId[Symbol.toPrimitive]();
+        return { status: true, message: "Call started" };
+      } else {
+        // const dbResult = await addUserModel.updateOne(
+        //   { rfid: historyResult[0].rfid },
+        //   {
+        //     $push: {
+        //       expenseHistory: {
+        //         $each: [
+        //           {
+        //             date: historyResult[0].currentDate,
+        //             callStartTime: historyResult[0].callStartTime,
+        //             callEndTime: currentDateTime().currentTime,
+        //           },
+        //         ],
+        //         $position: 0,
+        //       },
+        //     },
+        //     $set: { balance: this.historyResult[].balance },
+        //   }
+        // );
+      }
+    } catch (error) {
+      console.log(error);
+      // throw error;
     }
   }
 }

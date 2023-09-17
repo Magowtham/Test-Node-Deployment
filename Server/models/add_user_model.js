@@ -23,6 +23,10 @@ const userSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
+  expenseHistory: {
+    type: Array,
+    default: [],
+  },
 });
 
 const userModel = database.model("userdatas", userSchema);
