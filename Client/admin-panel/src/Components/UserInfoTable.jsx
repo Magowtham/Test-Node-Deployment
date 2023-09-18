@@ -14,7 +14,7 @@ function UserInfoTable({
   const navigate = useNavigate();
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [pageData, setPageData] = useState([]);
-  const [pageSize] = useState(15);
+  const [pageSize] = useState(8);
   const [presentPage, setPresentPage] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isEditClicked, setIsEditClicked] = useState(false);
@@ -58,6 +58,9 @@ function UserInfoTable({
   };
   const handleRechargeHistory = (rfid) => {
     navigate("/rechargeHistory", { state: { rfid } });
+  };
+  const handleExpenseHistory = (rfid) => {
+    navigate("/expenseHistory", { state: { rfid } });
   };
   const handleTablePageChange = (e) => {
     fetchPageData(e.selected, false);
@@ -244,6 +247,7 @@ function UserInfoTable({
             <th>Student Name</th>
             <th>Roll Number</th>
             <th>Balance Amount</th>
+            <th>Options</th>
           </tr>
         </thead>
         {isTableLoading ? (
@@ -261,30 +265,39 @@ function UserInfoTable({
                 <td>{user?.name}</td>
                 <td>{user?.rollnumber}</td>
                 <td>{user?.balance}</td>
-                <td>
+                <td className="options-sec">
                   <button
                     onClick={() => {
                       handleEdit(index);
                     }}
+                    className="edit-btn"
                   >
-                    Edit
+                    <span class="material-symbols-outlined">edit</span>
                   </button>
                   <button
                     onClick={() => {
                       handleRemove(index);
                     }}
-                    key={editIndex}
+                    className="delete-btn"
                   >
-                    Remove
+                    <span class="material-symbols-outlined">delete</span>
                   </button>
                   <button
                     onClick={() => {
                       handleRechargeHistory(user?.rfid);
                     }}
+                    className="recharge-history-btn"
                   >
                     Recharge History
                   </button>
-                  <button>Expense History </button>
+                  <button
+                    onClick={() => {
+                      handleExpenseHistory(user?.rfid);
+                    }}
+                    className="expense-history-btn"
+                  >
+                    Expense History
+                  </button>
                 </td>
               </tr>
             ))}

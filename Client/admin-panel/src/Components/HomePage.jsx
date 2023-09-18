@@ -2,8 +2,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import axios from "axios";
 import "../Css/HomePage.css";
 import { Routes, Route, useFetcher } from "react-router-dom";
-import RechargeHistory from "./RechargeHistory";
 import UserInfoTable from "./UserInfoTable";
+import RechargeHistory from "./RechargeHistory";
+import ExpenseHistory from "./ExpenseHistory";
 
 function HomePage() {
   const [adminUserName, setAdminUserName] = useState("gowtham");
@@ -134,20 +135,30 @@ function HomePage() {
           onClick={handleOverlay}
         ></div>
         <nav>
-          <div className="search-bar">
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="RFID or Name or RollNumber..."
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-              }}
-            />
+          <div className="logo-sec">
+            <img src="/alvas.png" alt="" />
+          </div>
+          <div className="heading-sec">
+            <h1>TELEPHONE TRANSACTION MANAGEMENT SYSTEM</h1>
+            <h3>For Secure Data And Management</h3>
+          </div>
+          <div className="search-bar-sec">
+            <div className="search-bar">
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="RFID or Name or RollNumber..."
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
+              />
+              <button>Search</button>
+            </div>
           </div>
         </nav>
         <div className="user-table-sec">
           <Routes>
-            <Route
+            {/* <Route
               exact
               path="/"
               element={
@@ -159,15 +170,25 @@ function HomePage() {
                   inputClear={setSearchInputClear}
                 />
               }
-            />
+            /> */}
             <Route path="/rechargeHistory" element={<RechargeHistory />} />
+            <Route path="/expenseHistory" element={<ExpenseHistory />} />
           </Routes>
         </div>
         <div className="footer-sec">
-          <button>Daily History</button>
-          <button>Monthly History</button>
-          <button>View History</button>
-          <button onClick={handleAddUser}>Add Student</button>
+          <button className="daily-history-btn">
+            Daily History
+            <span class="material-symbols-outlined">download</span>
+          </button>
+          <button className="monthly-history-btn">
+            Monthly History
+            <span class="material-symbols-outlined">download</span>
+          </button>
+          <button className="full-history-btn">View History</button>
+          <button onClick={handleAddUser} className="add-user-btn">
+            Add Student
+            <span class="material-symbols-outlined">add</span>
+          </button>
         </div>
         <form
           className={`add-user-form ${isAddUserBtnClicked ? `open` : ``}`}

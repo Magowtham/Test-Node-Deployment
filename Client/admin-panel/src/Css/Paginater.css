@@ -1,18 +1,71 @@
-.pagination-container {
-  margin: auto;
+* {
+  font-family: "Lato", sans-serif;
 }
 .pagination-container {
+  margin: auto;
   display: flex;
-  max-width: 300px;
-  border: 2px solid red;
   justify-content: space-between;
+  align-items: center;
+}
+.pagination-container {
+  border: 0;
+  background-color: #fff;
   list-style: none;
-  width: 300px;
+  box-shadow: 0 0 0.25em 0.25em #cacaca;
+  padding: 4px;
+  min-width: 300px;
+  user-select: none;
 }
 
 .pagination-container {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 0;
+  bottom: 15%;
+}
+
+.page-btn {
+  border: 0;
+  cursor: pointer;
+  border-radius: 4px;
+  color: mediumslateblue;
+  width: 35px;
+  height: 35px;
+  font-size: 1rem;
+}
+.page-btn-link {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.page-active {
+  background-color: mediumslateblue;
+  color: #ffff;
+}
+
+.page-next-btn {
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  color: mediumslateblue;
+}
+.page-next-btn :hover {
+  opacity: 0.6;
+  transition: opacity 0.1s ease;
+}
+.page-prev-btn {
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  color: mediumslateblue;
+}
+.page-prev-btn :hover {
+  opacity: 0.6;
+  transition: opacity 0.1s ease-in;
+}
+.page-next-btn-link {
+  border: 0;
+  padding: 8px 15px;
 }
