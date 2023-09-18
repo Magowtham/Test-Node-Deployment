@@ -114,7 +114,7 @@ class UserService {
               },
             },
             $set: {
-              balance: parseInt(rechargeHistory.balance) + parseInt(amount),
+              balance: rechargeHistory.balance + parseInt(amount),
             },
           }
         );
@@ -163,6 +163,45 @@ class UserService {
       throw error;
     }
   }
+
+  static async expenseHistoryPagination(rfid, pageStart, pageSize) {
+    try {
+      const pipeLine = [
+        {
+          $match: {
+            rfid,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            historySlice: {
+              $slice: [
+                `$expenseHistory`,
+                parseInt(pageStart * pageSize),
+                parseInt(pageSize),
+              ],
+            },
+            rechargeHistoryLength: {
+              $size: "$expenseHistory",
+            },
+          },
+        },
+      ];
+      const [result] = await addUserModel.aggregate(pipeLine);
+      if (!result) {
+        return { status: false, message: "User Not Found" };
+      } else {
+        return {
+          status: true,
+          history: result?.historySlice,
+          historyLength: result?.rechargeHistoryLength,
+        };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
   static async search(query) {
     try {
       const results = await addUserModel.find(
@@ -190,101 +229,64 @@ class UserService {
       throw error;
     }
   }
-  static usersHistory = [];
-  static intervalTime = 3000;
-  static async amountDeducter(index, rfid, res) {
-    const timer = setInterval(() => {
-      if (this.usersHistory[index].balance < 10) {
-        res
-          .status(200)
-          .json({ status: false, message: "Insufficient Balance" });
-      }
-      this.usersHistory[index].balance -= 1;
-      console.log(this.usersHistory[index].balance);
-    }, this.intervalTime);
-    this.usersHistory[index].timerId = timer[Symbol.toPrimitive]();
-  }
-  static async startAmountReducter(rfid, res) {
+  static async getBalance(rfid) {
     try {
       const dbResult = await addUserModel.findOne(
         { rfid },
         { balance: 1, _id: 0 }
       );
-      console.log(dbResult);
       if (!dbResult) {
         return { status: false, message: "User Not Exists" };
       }
-
-      if (Number(dbResult.balance) < 10) {
-        return { status: false, message: "Insufficeint Balance" };
-      }
       const { currentDate, currentTime } = currentDateTime();
-      this.usersHistory.push({
-        date: currentDate,
-        callStartTime: currentTime,
-        balance: Number(dbResult.balance),
-      });
-      this.amountDeducter(this.usersHistory.length - 1, rfid, res);
-      return { status: true, ID: this.usersHistory.length - 1 };
+      await addUserModel.updateOne(
+        { rfid },
+        {
+          $push: {
+            expenseHistory: {
+              $each: [
+                {
+                  date: currentDate,
+                  callStartTime: currentTime,
+                  callEndTime: "Call Started",
+                  reductedAmount: 0,
+                },
+              ],
+              $position: 0,
+            },
+          },
+        }
+      );
+      return { status: true, balance: dbResult?.balance };
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
 
-  static async dial(rfid) {
+  static async setBalance(rfid, reductedBalance) {
     try {
-      const historyResult = this.usersHistory.filter(
-        (user) => user.rfid === rfid
+      const dbResult = await addUserModel.findOne(
+        { rfid },
+        { balance: 1, _id: 0 }
       );
-      if (historyResult.length === 0) {
-        const dbResult = await addUserModel.findOne(
-          { rfid },
-          { balance: 1, _id: 0 }
-        );
-        if (!dbResult) {
-          return { status: false, message: "User Not Exists" };
-        }
-        if (Number(dbResult.balance) < 10) {
-          return { status: false, message: "Insufficeint Balance" };
-        }
-        this.usersHistory.push({
-          rfid,
-          balance: Number(dbResult.balance),
-          currentDate: currentDateTime().currentDate,
-          callStartTime: currentDateTime().currentTime,
-        });
-        const timeId = setInterval(() => {
-          this.usersHistory[this.usersHistory.length - 1].balance -= 1;
-          this.usersHistory;
-          console.log(this.usersHistory);
-        }, this.intervalTime);
-        this.usersHistory[this.usersHistory.length - 1].timerId =
-          timeId[Symbol.toPrimitive]();
-        return { status: true, message: "Call started" };
-      } else {
-        // const dbResult = await addUserModel.updateOne(
-        //   { rfid: historyResult[0].rfid },
-        //   {
-        //     $push: {
-        //       expenseHistory: {
-        //         $each: [
-        //           {
-        //             date: historyResult[0].currentDate,
-        //             callStartTime: historyResult[0].callStartTime,
-        //             callEndTime: currentDateTime().currentTime,
-        //           },
-        //         ],
-        //         $position: 0,
-        //       },
-        //     },
-        //     $set: { balance: this.historyResult[].balance },
-        //   }
-        // );
+      if (!dbResult) {
+        return { status: false, message: "User Not Exists" };
       }
+
+      await addUserModel.updateOne(
+        { rfid },
+        {
+          $set: {
+            [`expenseHistory.0.callEndTime`]: currentDateTime().currentTime,
+            [`expenseHistory.0.reductedAmount`]:
+              Number(dbResult?.balance) - reductedBalance,
+            balance: reductedBalance,
+          },
+        }
+      );
+      return { status: true, message: "Balance Amount Updated Successfully" };
     } catch (error) {
-      console.log(error);
-      // throw error;
+      throw error;
     }
   }
 }

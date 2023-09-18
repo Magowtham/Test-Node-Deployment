@@ -118,7 +118,7 @@ exports.searchUser = async (req, res) => {
 exports.startCall = async (req, res) => {
   try {
     const { rfid } = req.body;
-    const startCallResult = await UserService.startAmountReducter(rfid, res);
+    const startCallResult = await UserService.getBalance(rfid);
     if (!startCallResult?.status) {
       res.json(startCallResult);
     } else {
@@ -130,6 +130,34 @@ exports.startCall = async (req, res) => {
 };
 exports.endCall = async (req, res) => {
   try {
-    const { rfid, index } = req.body;
-  } catch (error) {}
+    const { rfid, balance } = req.body;
+    const endCallResult = await UserService.setBalance(rfid, balance);
+    if (!endCallResult?.status) {
+      res.json(endCallResult);
+    } else {
+      res.status(200).json(endCallResult);
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Server Erorr" });
+  }
+};
+
+exports.expenseHistory = async (req, res) => {
+  try {
+    const rfid = req.query?.rfid;
+    const pageStart = req.query?.pageStart;
+    const pageSize = req.query?.pageSize;
+    expenseHistoryResult = await UserService.expenseHistoryPagination(
+      rfid,
+      pageStart,
+      pageSize
+    );
+    if (!expenseHistoryResult?.status) {
+      res.json(expenseHistoryResult);
+    } else {
+      res.status(200).json(expenseHistoryResult);
+    }
+  } catch (error) {
+    res.status(500).json({ status: false, message: "Server Error" });
+  }
 };
