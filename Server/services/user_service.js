@@ -125,7 +125,7 @@ class UserService {
     }
   }
 
-  static async rechargePagination(rfid, pageStart, pageSize) {
+  static async rechargePagination(rfid, pageStart, pageSize, reductionStatus) {
     try {
       const pipeLine = [
         {
@@ -153,6 +153,12 @@ class UserService {
       if (!result) {
         return { status: false, message: "User Not Found" };
       } else {
+        if (Number(reductionStatus) === 1) {
+          result?.historySlice.forEach((history) => {
+            history.amount = 0;
+            history;
+          });
+        }
         return {
           status: true,
           history: result?.historySlice,

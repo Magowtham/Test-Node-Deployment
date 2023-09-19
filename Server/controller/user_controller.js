@@ -85,11 +85,12 @@ exports.getRechargeHistory = async (req, res) => {
     const rfid = req.query?.rfid;
     const pageStart = req.query?.pageStart;
     const pageSize = req.query?.pageSize;
-
+    const reductionStatus = req.query?.reductionStatus;
     const isRechargeHistory = await UserService.rechargePagination(
       rfid,
       pageStart,
-      pageSize
+      pageSize,
+      reductionStatus
     );
     if (!isRechargeHistory?.status) {
       res.json(isRechargeHistory);

@@ -3,10 +3,9 @@ const authModel = require("../models/auth_model");
 const bcrypt = require("bcrypt");
 
 class Authentication {
-  static async autheinticateUser(name, password) {
+  static async autheinticateUser(name, password, reduction) {
     try {
       const names = await authModel.findOne({ name });
-
       if (names === null) {
         return { status: false, message: "Admin Dose'nt Exist" };
       } else {
@@ -14,7 +13,7 @@ class Authentication {
         if (!isMatch) {
           return { status: false, message: "Incorrect Password" };
         } else {
-          return { status: true, admin: names.name };
+          return { status: true, admin: names.name, reduction };
         }
       }
     } catch (error) {}
