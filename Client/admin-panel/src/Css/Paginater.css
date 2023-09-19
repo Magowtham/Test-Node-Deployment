@@ -21,9 +21,20 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 15%;
+  bottom: 4%;
 }
-
+.media-screen {
+  bottom: 0;
+  left: 0;
+  transform: translateX(0%);
+  position: sticky;
+  box-shadow: 0;
+  box-shadow: none;
+  border: 2px solid 1px;
+}
+.pagination-container.hide {
+  display: none;
+}
 .page-btn {
   border: 0;
   cursor: pointer;

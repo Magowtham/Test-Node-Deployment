@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Paginater from "./Paginater";
 
 function RechargeHistory() {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [pageData, setPageData] = useState([]);
   const [totalHistoryCount, setTotalHistoryCount] = useState(0);
   const [pageSize] = useState(15);
@@ -14,12 +15,15 @@ function RechargeHistory() {
     console.log(pageNumber);
     try {
       const result = await axios.get(
-        `http://localhost:9000/client/recharge_history?rfid=${state.rfid}&pageStart=${pageNumber}&pageSize=${pageSize}`
+        `http://localhost:9000/client/recharge_history?rfid=${
+          state.rfid
+        }&pageStart=${pageNumber}&pageSize=${pageSize}&reductionStatus=${
+          state?.reductionStatus ? 1 : 0
+        }`
       );
       if (totalCount) {
         setTotalHistoryCount(result.data?.historyLength);
       }
-      console.log(result.data);
       setPageData(result.data?.history);
     } catch (error) {
       console.log(error);
@@ -31,6 +35,11 @@ function RechargeHistory() {
     fetchPageData(e.selected, false);
     setPresentPage(e.selected + 1);
   };
+  useEffect(() => {
+    if (!state?.auth) {
+      navigate("/login");
+    }
+  }, [state]);
   let triggerOnce = false;
   useEffect(() => {
     if (!triggerOnce) {

@@ -10,11 +10,14 @@ function UserInfoTable({
   searchRefresh,
   initialRefresh,
   inputClear,
+  isOverlay,
+  setIsOverlay,
+  reductionStatus,
 }) {
   const navigate = useNavigate();
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [pageData, setPageData] = useState([]);
-  const [pageSize] = useState(8);
+  const [pageSize, setPageSize] = useState(9);
   const [presentPage, setPresentPage] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isEditClicked, setIsEditClicked] = useState(false);
@@ -57,10 +60,12 @@ function UserInfoTable({
     }
   };
   const handleRechargeHistory = (rfid) => {
-    navigate("/rechargeHistory", { state: { rfid } });
+    navigate("/rechargeHistory", {
+      state: { rfid, auth: true, reductionStatus },
+    });
   };
   const handleExpenseHistory = (rfid) => {
-    navigate("/expenseHistory", { state: { rfid } });
+    navigate("/expenseHistory", { state: { rfid, auth: true } });
   };
   const handleTablePageChange = (e) => {
     fetchPageData(e.selected, false);
@@ -106,6 +111,7 @@ function UserInfoTable({
     setEditRfid(pageData[index]?.rfid);
     setEditRollNumber(pageData[index]?.rollnumber);
     editPasswordRef.current.value = "";
+    setIsOverlay(true);
   };
   const handleEditInput = (e) => {
     const { name, value } = e.target;
@@ -139,17 +145,9 @@ function UserInfoTable({
     setRemoveFormError({});
     removeFormInputRef.current.value = "";
     setRemoveRfid(pageData[index].rfid);
+    setIsOverlay(true);
   };
-  const handleKeyDown = (e) => {
-    if (e.key === "Escape") {
-      setIsEditClicked(false);
-      setIsRemoveClicked(false);
-    }
-  };
-  const handleOverlay = () => {
-    setIsEditClicked(false);
-    setIsRemoveClicked(false);
-  };
+
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
       (async () => {
@@ -194,7 +192,12 @@ function UserInfoTable({
       })();
     }
   }, [isRemoveFormValidated]);
-
+  useEffect(() => {
+    if (!isOverlay) {
+      setIsEditClicked(false);
+      setIsRemoveClicked(false);
+    }
+  }, [isOverlay]);
   useEffect(() => {
     if (isEditSubmited) {
       setIsEditValidated(editValidater());
@@ -208,12 +211,6 @@ function UserInfoTable({
     }
   }, [isRemoveSubmited]);
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  });
   useEffect(() => {
     if (searchData.length !== 0) {
       setPageData(searchData);
@@ -235,10 +232,6 @@ function UserInfoTable({
 
   return (
     <>
-      <div
-        className={`overlay ${isEditClicked || isRemoveClicked ? `open` : ``}`}
-        onClick={handleOverlay}
-      ></div>
       <table>
         <thead>
           <tr>
@@ -246,8 +239,11 @@ function UserInfoTable({
             <th>RFID NO.</th>
             <th>Student Name</th>
             <th>Roll Number</th>
-            <th>Balance Amount</th>
-            <th>Options</th>
+            <th className={`${reductionStatus ? `hide` : ``}`}>
+              Balance Amount
+            </th>
+            <th className={`${reductionStatus ? `hide` : ``}`}>Manage</th>
+            <th>{reductionStatus ? `Recharge` : `View`} Details</th>
           </tr>
         </thead>
         {isTableLoading ? (
@@ -260,12 +256,14 @@ function UserInfoTable({
           <tbody>
             {pageData?.map((user, index) => (
               <tr key={index + 1}>
-                <td>{presentPage * pageSize + (index + 1)}</td>
+                <td className="slno">{presentPage * pageSize + (index + 1)}</td>
                 <td>{user?.rfid}</td>
                 <td>{user?.name}</td>
                 <td>{user?.rollnumber}</td>
-                <td>{user?.balance}</td>
-                <td className="options-sec">
+                <td className={`${reductionStatus ? `hide` : ``}`}>
+                  {user?.balance}
+                </td>
+                <td className={`manage-sec ${reductionStatus ? `hide` : ``}`}>
                   <button
                     onClick={() => {
                       handleEdit(index);
@@ -282,21 +280,25 @@ function UserInfoTable({
                   >
                     <span class="material-symbols-outlined">delete</span>
                   </button>
+                </td>
+                <td className="view-details-sec">
                   <button
                     onClick={() => {
                       handleRechargeHistory(user?.rfid);
                     }}
                     className="recharge-history-btn"
                   >
-                    Recharge History
+                    Recharge
                   </button>
                   <button
                     onClick={() => {
                       handleExpenseHistory(user?.rfid);
                     }}
-                    className="expense-history-btn"
+                    className={`expense-history-btn ${
+                      reductionStatus ? `hide` : ``
+                    }`}
                   >
-                    Expense History
+                    Expense
                   </button>
                 </td>
               </tr>
@@ -308,11 +310,15 @@ function UserInfoTable({
         totalElements={totalUsers}
         pageSize={pageSize}
         handlePageChange={handleTablePageChange}
+        isVisible={searchRefresh}
       />
       <form
         className={`edit-form ${isEditClicked ? `open` : ``}`}
         onSubmit={handleEditForm}
       >
+        <div className="heading-sec">
+          <h1>Edit User </h1>
+        </div>
         <p>{editError.rfidError}</p>
         <input
           type="text"
@@ -346,7 +352,9 @@ function UserInfoTable({
           />
           <button>see</button>
         </label>
-        <button type="submit">Save</button>
+        <button type="submit" className="save-btn">
+          Save
+        </button>
       </form>
       <form
         className={`remove-form ${isRemoveClicked ? `open` : ``}`}

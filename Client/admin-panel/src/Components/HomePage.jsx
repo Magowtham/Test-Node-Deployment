@@ -1,13 +1,16 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import axios from "axios";
 import "../Css/HomePage.css";
-import { Routes, Route, useFetcher } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import UserInfoTable from "./UserInfoTable";
 import RechargeHistory from "./RechargeHistory";
 import ExpenseHistory from "./ExpenseHistory";
 
 function HomePage() {
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const [adminUserName, setAdminUserName] = useState("gowtham");
+  const [reductionStatus, setReductionStatus] = useState(false);
   const [isAddUserBtnClicked, setIsAddUserBtnClicked] = useState(false);
   const [searchData, setSearchData] = useState([]);
   const [addUserData, setAddUserData] = useState({
@@ -23,7 +26,7 @@ function HomePage() {
   const [initialRefresh, setInitialRefresh] = useState(true);
   const [searchInputClear, setSearchInputClear] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
-
+  const [isOverlay, setIsOverlay] = useState(false);
   const addUserFormRef = useRef(null);
   const searchInputRef = useRef(null);
   const searchUser = async (query) => {
@@ -37,6 +40,7 @@ function HomePage() {
 
   const handleAddUser = () => {
     setIsAddUserBtnClicked(true);
+    setIsOverlay(true);
   };
   const handleAddUserForm = (e) => {
     e.preventDefault();
@@ -66,10 +70,12 @@ function HomePage() {
   const handleKeyDown = (e) => {
     if (e.key === "Escape") {
       setIsAddUserBtnClicked(false);
+      setIsOverlay(false);
     }
   };
   const handleOverlay = () => {
     setIsAddUserBtnClicked(false);
+    setIsOverlay(false);
   };
   const handleRefresh = (e) => {
     e.preventDefault();
@@ -78,6 +84,14 @@ function HomePage() {
       addUserFormRef.current[i].value = "";
     }
   };
+  useEffect(() => {
+    if (state?.auth) {
+      setAdminUserName(state?.admin);
+      setReductionStatus(state?.reduction);
+    } else {
+      navigate("/login");
+    }
+  }, [state]);
   useEffect(() => {
     if (searchQuery) {
       searchUser(searchQuery);
@@ -131,7 +145,7 @@ function HomePage() {
     <>
       <div className="home-page-container">
         <div
-          className={`overlay ${isAddUserBtnClicked ? `open` : ``}`}
+          className={`overlay ${isOverlay ? `open` : ``}`}
           onClick={handleOverlay}
         ></div>
         <nav>
@@ -158,19 +172,22 @@ function HomePage() {
         </nav>
         <div className="user-table-sec">
           <Routes>
-            {/* <Route
+            <Route
               exact
               path="/"
               element={
                 <UserInfoTable
                   adminUserName={adminUserName}
+                  reductionStatus={reductionStatus}
                   searchData={searchData}
                   searchRefresh={searchRefresh}
                   initialRefresh={initialRefresh}
                   inputClear={setSearchInputClear}
+                  isOverlay={isOverlay}
+                  setIsOverlay={setIsOverlay}
                 />
               }
-            /> */}
+            />
             <Route path="/rechargeHistory" element={<RechargeHistory />} />
             <Route path="/expenseHistory" element={<ExpenseHistory />} />
           </Routes>
