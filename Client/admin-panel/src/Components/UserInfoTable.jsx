@@ -41,6 +41,8 @@ function UserInfoTable({
   const [isRemoveFormValidated, setIsRemoveFormValidated] = useState(false);
   const [removeFormError, setRemoveFormError] = useState({});
   const [removeRfid, setRemoveRfid] = useState("");
+  const [vissibility, setVissibility] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const removeFormInputRef = useRef(null);
   const editPasswordRef = useRef(null);
   const fetchPageData = async (pageNumber, totalCount) => {
@@ -107,6 +109,7 @@ function UserInfoTable({
     inputClear(true);
     setIsEditClicked(true);
     setEditIndex(index);
+    setEditError({});
     setEditName(pageData[index]?.name);
     setEditRfid(pageData[index]?.rfid);
     setEditRollNumber(pageData[index]?.rollnumber);
@@ -147,11 +150,16 @@ function UserInfoTable({
     setRemoveRfid(pageData[index].rfid);
     setIsOverlay(true);
   };
-
+  const handlePasswordVisibility = (e) => {
+    e.preventDefault();
+    setVissibility(!vissibility);
+    editPasswordRef.current.type = vissibility ? `password` : `text   `;
+  };
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
       (async () => {
         try {
+          setFormLoading(true);
           const result = await axios.put(
             `http://localhost:9000/client/update/${pageData[editIndex]._id}`,
             editData
@@ -160,10 +168,12 @@ function UserInfoTable({
             setIsEditClicked(false);
             fetchPageData(presentPage, false);
           } else {
-            setEditError({ adminError: result.data?.message });
+            setEditError({ serverMessage: result.data?.message });
           }
         } catch (err) {
           console.log(err.message);
+        } finally {
+          setFormLoading(false);
         }
       })();
     }
@@ -242,7 +252,7 @@ function UserInfoTable({
             <th className={`${reductionStatus ? `hide` : ``}`}>
               Balance Amount
             </th>
-            <th className={`${reductionStatus ? `hide` : ``}`}>Manage</th>
+            <th>Manage</th>
             <th>{reductionStatus ? `Recharge` : `View`} Details</th>
           </tr>
         </thead>
@@ -263,7 +273,7 @@ function UserInfoTable({
                 <td className={`${reductionStatus ? `hide` : ``}`}>
                   {user?.balance}
                 </td>
-                <td className={`manage-sec ${reductionStatus ? `hide` : ``}`}>
+                <td className="manage-sec">
                   <button
                     onClick={() => {
                       handleEdit(index);
@@ -316,6 +326,10 @@ function UserInfoTable({
         className={`edit-form ${isEditClicked ? `open` : ``}`}
         onSubmit={handleEditForm}
       >
+        <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
+        <div className={`progress-bar ${formLoading ? `open` : ``}`}>
+          <div className="progress-bar-value"></div>
+        </div>
         <div className="heading-sec">
           <h1>Edit User </h1>
         </div>
@@ -350,11 +364,19 @@ function UserInfoTable({
             type="password"
             placeholder="Admin Password"
           />
-          <button>see</button>
+          <button
+            className="material-symbols-outlined"
+            onClick={handlePasswordVisibility}
+          >
+            {vissibility ? `visibility` : `visibility_off`}
+          </button>
         </label>
-        <button type="submit" className="save-btn">
-          Save
-        </button>
+        <div className="form-footer-sec">
+          <p>{editError?.serverMessage}</p>
+          <button type="submit" className="save-btn">
+            Save
+          </button>
+        </div>
       </form>
       <form
         className={`remove-form ${isRemoveClicked ? `open` : ``}`}
@@ -367,7 +389,7 @@ function UserInfoTable({
             placeholder="Admin Password.."
             ref={removeFormInputRef}
           />
-          <button>see</button>
+          <button className="material-symbols-outlined">visibility</button>
         </label>
         <button type="submit">Submit</button>
       </form>
