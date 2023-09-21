@@ -11,5 +11,6 @@ routes.put("/update/:id", userController.editDetails);
 routes.get("/recharge_history", userController.getRechargeHistory);
 routes.get("/expense_history", userController.expenseHistory);
 routes.get("/search", userController.searchUser);
+routes.get("/download_daily_history", userController.dailyHistoryDownloader);
 
 module.exports = routes;

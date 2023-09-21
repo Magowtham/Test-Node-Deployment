@@ -162,3 +162,7 @@ exports.expenseHistory = async (req, res) => {
     res.status(500).json({ status: false, message: "Server Error" });
   }
 };
+exports.dailyHistoryDownloader = async (req, res) => {
+  const arr = [{ name: "gowtham", hobby: "birding", branch: "ECE" }];
+  
+};

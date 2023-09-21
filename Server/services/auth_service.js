@@ -7,11 +7,21 @@ class Authentication {
     try {
       const names = await authModel.findOne({ name });
       if (names === null) {
-        return { status: false, message: "Admin Dose'nt Exist" };
+        return {
+          status: false,
+          adminError: true,
+          passwordError: false,
+          message: "Admin Dose'nt Exist",
+        };
       } else {
         const isMatch = await bcrypt.compare(password, names.password);
         if (!isMatch) {
-          return { status: false, message: "Incorrect Password" };
+          return {
+            status: false,
+            adminError: false,
+            passwordError: true,
+            message: "Incorrect Password",
+          };
         } else {
           return { status: true, admin: names.name, reduction };
         }

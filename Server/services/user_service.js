@@ -153,10 +153,10 @@ class UserService {
       if (!result) {
         return { status: false, message: "User Not Found" };
       } else {
-        if (Number(reductionStatus) === 1) {
-          result?.historySlice.forEach((history) => {
-            history.amount = 0;
-            history;
+        if (Number(reductionStatus)) {
+          result?.historySlice.forEach((element) => {
+            element.amount =
+              Number(element.amount) - Number(element.amount) * 0.6;
           });
         }
         return {
