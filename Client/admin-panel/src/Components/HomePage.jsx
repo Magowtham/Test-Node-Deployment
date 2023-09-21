@@ -212,6 +212,9 @@ function HomePage() {
           onSubmit={handleAddUserForm}
           ref={addUserFormRef}
         >
+          <div className="heading-sec">
+            <h1>Add New User</h1>
+          </div>
           <p>{addUserFormErorr.rfidError}</p>
           <input type="text" placeholder="Student RFID..." />
           <p>{addUserFormErorr.nameError}</p>
@@ -221,8 +224,15 @@ function HomePage() {
           <div className="form-footer-sec">
             <p>{addUserFormErorr.serverMessage}</p>
             <div className="btn-sec">
-              <button type="submit">Submit</button>
-              <button onClick={handleRefresh}>Refresh</button>
+              <button type="submit" className="submit-btn">
+                Submit
+              </button>
+              <button
+                className="material-symbols-outlined refresh-btn"
+                onClick={handleRefresh}
+              >
+                refresh
+              </button>
             </div>
           </div>
         </form>

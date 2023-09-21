@@ -66,6 +66,7 @@ function ExpenseHistory() {
         totalElements={totalHistoryCount}
         pageSize={pageSize}
         handlePageChange={handleHistoryPage}
+        isVisible={true}
       />
     </>
   );

@@ -13,7 +13,80 @@
   align-items: center;
 }
 .login-container form {
-  border: 2px solid red;
   display: flex;
   flex-direction: column;
+  padding: 40px 40px 40px 40px;
+  width: 350px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 0 2px 4px #cacaca;
+  position: relative;
+}
+
+.login-container form .heading-sec {
+  text-align: center;
+  padding-bottom: 5px;
+}
+.login-container form input {
+  font-size: 0.9rem;
+  padding: 11px 10px;
+  border: 1px solid mediumslateblue;
+  border-radius: 4px;
+}
+.login-container form label {
+  display: flex;
+  position: relative;
+}
+.login-container form label input {
+  width: 100%;
+}
+.login-container form label button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 5%;
+}
+.login-container form label button {
+  font-size: 1.2rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.login-container form input[type="text"] {
+  font-size: 1rem;
+  color: black;
+}
+.login-container form input::placeholder {
+  font-size: 1rem;
+}
+.login-container form input:focus {
+  outline: 2px solid mediumslateblue;
+}
+.login-container form p {
+  margin-top: 25px;
+  margin-bottom: 5px;
+  color: red;
+}
+.login-container form .form-footer-sec {
+  margin-top: 30px;
+}
+.login-container form .form-footer-sec p {
+  margin-top: 0;
+  color: mediumslateblue;
+}
+
+.login-container form .form-footer-sec button {
+  padding: 10px 30px;
+  font-size: 1rem;
+  font-weight: 900;
+  background-color: mediumslateblue;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-container form .form-footer-sec button:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Css/AdminLogin.css";
 import axios from "axios";
@@ -8,7 +8,9 @@ function AdminLogin() {
   const [loginData, setLoginData] = useState({ name: "", password: "" });
   const [isLoginValidated, setIsLoginValidated] = useState(false);
   const [loginFormError, setLoginFormError] = useState({});
+  const [visibility, setVisibility] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const editPasswordRef = useRef(null);
   const handleLoginForm = (e) => {
     e.preventDefault();
     setIsLoginValidated(false);
@@ -26,6 +28,11 @@ function AdminLogin() {
     }
     setLoginFormError(error);
     return true;
+  };
+  const handlePasswordVisibility = (e) => {
+    e.preventDefault();
+    setVisibility(!visibility);
+    editPasswordRef.current.type = visibility ? `password` : `text`;
   };
   useEffect(() => {
     if (isLoginFormSubmitted) {
@@ -51,7 +58,11 @@ function AdminLogin() {
               },
             });
           } else {
-            setLoginFormError({ serverError: loginResult.data?.message });
+            if (loginResult.data?.adminError) {
+              setLoginFormError({ userNameError: loginResult.data?.message });
+            } else {
+              setLoginFormError({ passwordError: loginResult.data?.message });
+            }
           }
         } catch (error) {
           console.log(error);
@@ -65,6 +76,10 @@ function AdminLogin() {
     <>
       <div className="login-container">
         <form onSubmit={handleLoginForm}>
+          <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
+          <div className={`progress-bar ${formLoading ? `open` : ``}`}>
+            <div className="progress-bar-value"></div>
+          </div>
           <div className="heading-sec">
             <h1>Admin Login</h1>
           </div>
@@ -72,11 +87,18 @@ function AdminLogin() {
           <input type="text" placeholder="UserName.." />
           <p>{loginFormError?.passwordError}</p>
           <label>
-            <input type="text" placeholder="Password" />
-            <button>see</button>
+            <input ref={editPasswordRef} type="text" placeholder="Password" />
+            <button
+              className="material-symbols-outlined"
+              onClick={handlePasswordVisibility}
+            >
+              {visibility ? `visibility` : `visibility_off`}
+            </button>
           </label>
-          <p>{loginFormError.serverError}</p>
-          <button type="submit">Login</button>
+          <div className="form-footer-sec">
+            <p>Forgot Password ?</p>
+            <button type="submit">Login</button>
+          </div>
         </form>
       </div>
     </>
