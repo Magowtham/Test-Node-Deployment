@@ -85,11 +85,15 @@ nav .search-bar-sec .search-bar button:hover {
   opacity: 0.8;
 }
 .user-table-sec {
-  height: 80%;
-  min-height: 500px;
+  height: 90%;
+  min-height: 600px;
   position: relative;
-  overflow: auto;
   margin-top: 30px;
+}
+.user-table-sec {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 .add-user-form {
   position: absolute;
@@ -178,16 +182,19 @@ nav .search-bar-sec .search-bar button:hover {
   transition: transform 0.1s ease-in;
 }
 .footer-sec {
-  display: flex;
-  justify-content: space-evenly;
+  height: 10%;
   width: 60%;
   margin: auto;
   padding: 35px;
   min-width: 800px;
 }
-
+.footer-sec {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
 .footer-sec button {
-  padding: 12px 20px;
+  padding: 15px 20px;
   font-size: 0.9rem;
   font-weight: 900;
   border: 0;
@@ -214,12 +221,11 @@ nav .search-bar-sec .search-bar button:hover {
   background-color: rgb(134, 255, 134);
 }
 
-.full-history-btn {
-  background-color: rgb(97, 97, 255);
-}
-
 .add-user-btn {
   background-color: rgb(134, 255, 134);
+}
+.logout-btn {
+  background-color: rgb(97, 97, 255);
 }
 
 /* navbar media screen start */

@@ -84,6 +84,10 @@ function HomePage() {
       addUserFormRef.current[i].value = "";
     }
   };
+  const handleLogout = () => {
+    state.auth = false;
+    navigate("/login");
+  };
   useEffect(() => {
     if (state?.auth) {
       setAdminUserName(state?.admin);
@@ -201,10 +205,13 @@ function HomePage() {
             Monthly History
             <span class="material-symbols-outlined">download</span>
           </button>
-          <button className="full-history-btn">View History</button>
           <button onClick={handleAddUser} className="add-user-btn">
             Add Student
             <span class="material-symbols-outlined">add</span>
+          </button>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+            <span class="material-symbols-outlined">logout</span>
           </button>
         </div>
         <form

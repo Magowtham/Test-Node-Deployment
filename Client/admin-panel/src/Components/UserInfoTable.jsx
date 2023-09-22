@@ -155,6 +155,7 @@ function UserInfoTable({
     setVissibility(!vissibility);
     editPasswordRef.current.type = vissibility ? `password` : `text   `;
   };
+
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
       (async () => {
@@ -232,6 +233,7 @@ function UserInfoTable({
       fetchPageData(presentPage, false);
     }
   }, [searchRefresh]);
+
   let triggerOnce = true;
   useEffect(() => {
     if (triggerOnce) {
@@ -242,86 +244,92 @@ function UserInfoTable({
 
   return (
     <>
-      <table>
-        <thead>
-          <tr>
-            <th>SL. NO.</th>
-            <th>RFID NO.</th>
-            <th>Student Name</th>
-            <th>Roll Number</th>
-            <th className={`${reductionStatus ? `hide` : ``}`}>
-              Balance Amount
-            </th>
-            <th>Manage</th>
-            <th>{reductionStatus ? `Recharge` : `View`} Details</th>
-          </tr>
-        </thead>
-        {isTableLoading ? (
-          <tbody>
+      <div className="sub-table-sec">
+        <table>
+          <thead>
             <tr>
-              <td>Loading...</td>
+              <th>SL. NO.</th>
+              <th>RFID NO.</th>
+              <th>Student Name</th>
+              <th>Roll Number</th>
+              <th className={`${reductionStatus ? `hide` : ``}`}>
+                Balance Amount
+              </th>
+              <th>Manage</th>
+              <th>{reductionStatus ? `Recharge` : `View`} Details</th>
             </tr>
-          </tbody>
-        ) : (
-          <tbody>
-            {pageData?.map((user, index) => (
-              <tr key={index + 1}>
-                <td className="slno">{presentPage * pageSize + (index + 1)}</td>
-                <td>{user?.rfid}</td>
-                <td>{user?.name}</td>
-                <td>{user?.rollnumber}</td>
-                <td className={`${reductionStatus ? `hide` : ``}`}>
-                  {user?.balance}
-                </td>
-                <td className="manage-sec">
-                  <button
-                    onClick={() => {
-                      handleEdit(index);
-                    }}
-                    className="edit-btn"
-                  >
-                    <span class="material-symbols-outlined">edit</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleRemove(index);
-                    }}
-                    className="delete-btn"
-                  >
-                    <span class="material-symbols-outlined">delete</span>
-                  </button>
-                </td>
-                <td className="view-details-sec">
-                  <button
-                    onClick={() => {
-                      handleRechargeHistory(user?.rfid);
-                    }}
-                    className="recharge-history-btn"
-                  >
-                    Recharge
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleExpenseHistory(user?.rfid);
-                    }}
-                    className={`expense-history-btn ${
-                      reductionStatus ? `hide` : ``
-                    }`}
-                  >
-                    Expense
-                  </button>
-                </td>
+          </thead>
+          {isTableLoading ? (
+            <tbody>
+              <tr>
+                <td>Loading...</td>
               </tr>
-            ))}
-          </tbody>
-        )}
-      </table>
-      <Paginater
-        totalElements={totalUsers}
-        pageSize={pageSize}
-        handlePageChange={handleTablePageChange}
-        isVisible={searchRefresh}
-      />
+            </tbody>
+          ) : (
+            <tbody>
+              {pageData?.map((user, index) => (
+                <tr key={index + 1}>
+                  <td className="slno">
+                    {presentPage * pageSize + (index + 1)}
+                  </td>
+                  <td>{user?.rfid}</td>
+                  <td>{user?.name}</td>
+                  <td>{user?.rollnumber}</td>
+                  <td className={`${reductionStatus ? `hide` : ``}`}>
+                    {user?.balance}
+                  </td>
+                  <td className="manage-sec">
+                    <button
+                      onClick={() => {
+                        handleEdit(index);
+                      }}
+                      className="edit-btn"
+                    >
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleRemove(index);
+                      }}
+                      className="delete-btn"
+                    >
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </td>
+                  <td className="view-details-sec">
+                    <button
+                      onClick={() => {
+                        handleRechargeHistory(user?.rfid);
+                      }}
+                      className="recharge-history-btn"
+                    >
+                      Recharge
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleExpenseHistory(user?.rfid);
+                      }}
+                      className={`expense-history-btn ${
+                        reductionStatus ? `hide` : ``
+                      }`}
+                    >
+                      Expense
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+        </table>
+      </div>
+      <div className="paginater-sec">
+        <Paginater
+          totalElements={totalUsers}
+          pageSize={pageSize}
+          handlePageChange={handleTablePageChange}
+          isVisible={searchRefresh}
+        />
+      </div>
       <form
         className={`edit-form ${isEditClicked ? `open` : ``}`}
         onSubmit={handleEditForm}

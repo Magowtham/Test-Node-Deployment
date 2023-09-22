@@ -1,6 +1,3 @@
-* {
-  font-family: "Lato", sans-serif;
-}
 .pagination-container {
   margin: auto;
   display: flex;
@@ -17,12 +14,6 @@
   user-select: none;
 }
 
-.pagination-container {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 4%;
-}
 .media-screen {
   bottom: 0;
   left: 0;
