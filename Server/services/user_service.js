@@ -11,9 +11,13 @@ class UserService {
       if (data == null) {
         const createUser = new addUserModel({ name, rfid, rollnumber });
         await createUser.save();
-        return true;
+        return { status: true, exisist: false, message: "Successfull" };
       } else {
-        return false;
+        return {
+          status: false,
+          exisist: true,
+          message: "RFID Already Exists",
+        };
       }
     } catch (error) {
       throw error;
@@ -67,12 +71,23 @@ class UserService {
       if (!isAdmin) {
         return { status: false, message: "Incorrect Password" };
       } else {
-        const userData = await addUserModel.findOne({
-          _id: new mongoose.Types.ObjectId(id),
-        });
+        const userData = await addUserModel.findOne(
+          {
+            _id: new mongoose.Types.ObjectId(id),
+          },
+          { _id: 0, rfid: 1 }
+        );
         if (!userData) {
           return { status: false, message: "User Not Found" };
         } else {
+          const userObject = await addUserModel.find(
+            { rfid },
+            { rfid: 1, _id: 1 }
+          );
+
+          if (userObject.length !== 0 && userObject[0]?._id?.valueOf() !== id) {
+            return { status: false, message: "RFID Already Exists" };
+          }
           const myquery = { _id: new mongoose.Types.ObjectId(id) };
           const newvalues = {
             $set: { name: name, rfid: rfid, rollnumber: rollnumber },

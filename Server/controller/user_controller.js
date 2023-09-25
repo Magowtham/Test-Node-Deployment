@@ -5,15 +5,15 @@ exports.addUser = async (req, res) => {
   try {
     const { name, rfid, rollnumber } = req.body;
     const successUser = await UserService.newUser(name, rfid, rollnumber);
-    if (successUser) {
-      res.json({ status: true, message: "User Registration Successfull" });
+    if (successUser?.status) {
+      res.status(200).json(successUser);
     } else {
-      res.json({ status: false, message: "User Already Exist" });
+      res.json(successUser);
     }
   } catch (error) {
     res
       .status(500)
-      .json({ status: false, message: "User Registration Unsuccessfull" });
+      .json({ status: false, exisist: true, message: "Unsuccessfull" });
   }
 };
 
@@ -164,5 +164,4 @@ exports.expenseHistory = async (req, res) => {
 };
 exports.dailyHistoryDownloader = async (req, res) => {
   const arr = [{ name: "gowtham", hobby: "birding", branch: "ECE" }];
-  
 };
