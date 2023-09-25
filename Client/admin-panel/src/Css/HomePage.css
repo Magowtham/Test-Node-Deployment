@@ -42,7 +42,7 @@ nav .logo-sec img {
   height: 100%;
 }
 nav .heading-sec h1 {
-  font-size: 1.8rem;
+  font-size: 1.9em;
   font-weight: 900;
   text-transform: uppercase;
   line-height: 35px;
@@ -56,7 +56,7 @@ nav .heading-sec h3 {
 nav .search-bar-sec .search-bar {
   border: 0;
   box-shadow: 0 0 2px 4px #cacaca;
-  height: 35px;
+  height: 40px;
   width: 300px;
   border-radius: 4px;
 }
@@ -68,7 +68,9 @@ nav .search-bar-sec .search-bar input {
   border-radius: 4px;
   outline: none;
 }
-
+nav .search-bar-sec .search-bar input[type="text"] {
+  font-size: 0.9rem;
+}
 nav .search-bar-sec .search-bar button {
   border: 0;
   height: 100%;
@@ -120,10 +122,16 @@ nav .search-bar-sec .search-bar button:hover {
 }
 .add-user-form .heading-sec h1 {
   font-size: 1.8rem;
+  font-weight: 900;
   color: black;
 }
+.add-user-form p {
+  margin-top: 20px;
+  margin-bottom: 1px;
+  color: red;
+}
 .add-user-form input {
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 11px 10px;
   border: 1px solid mediumslateblue;
   border-radius: 4px;
@@ -132,23 +140,26 @@ nav .search-bar-sec .search-bar button:hover {
   font-size: 1rem;
   color: black;
 }
-.add-user-form input::placeholder {
-  font-size: 1rem;
-}
+
 .add-user-form input:focus {
   outline: 2px solid mediumslateblue;
 }
-.add-user-form p {
-  margin-top: 20px;
-  color: red;
-}
-.add-user-form .form-footer-sec {
-}
+
 .add-user-form .form-footer-sec p {
   margin-top: 0;
 }
+
+.add-user-form .form-footer-sec {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
 .add-user-form .form-footer-sec .btn-sec {
   display: flex;
+}
+.add-user-form .form-footer-sec .btn-sec .refresh-btn {
+  margin-right: 12px;
 }
 
 .add-user-form .form-footer-sec .btn-sec .submit-btn {
@@ -247,29 +258,30 @@ nav .search-bar-sec .search-bar button:hover {
   }
   nav .search-bar-sec .search-bar button {
     font-size: 0.8rem;
-    font-weight: 500;
+    font-weight: 900;
   }
 }
 
 @media screen and (max-width: 1100px) {
   nav {
     justify-content: space-between;
+    border: 2px solid red;
   }
   nav .logo-sec {
     width: 60px;
   }
 
   nav .heading-sec h1 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     line-height: 25px;
   }
 
   nav .heading-sec h3 {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
-@media screen and (max-width: 940px) {
+@media screen and (max-width: 980px) {
   nav .heading-sec h1 {
     display: none;
   }

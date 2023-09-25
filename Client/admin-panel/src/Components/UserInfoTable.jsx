@@ -115,6 +115,7 @@ function UserInfoTable({
     setEditRollNumber(pageData[index]?.rollnumber);
     editPasswordRef.current.value = "";
     setIsOverlay(true);
+    setVissibility(false);
   };
   const handleEditInput = (e) => {
     const { name, value } = e.target;
@@ -149,11 +150,11 @@ function UserInfoTable({
     removeFormInputRef.current.value = "";
     setRemoveRfid(pageData[index].rfid);
     setIsOverlay(true);
+    setVissibility(false);
   };
-  const handlePasswordVisibility = (e) => {
-    e.preventDefault();
+  const handlePasswordVisibility = (elementRef) => {
     setVissibility(!vissibility);
-    editPasswordRef.current.type = vissibility ? `password` : `text   `;
+    elementRef.current.type = vissibility ? `password` : `text`;
   };
 
   useEffect(() => {
@@ -168,6 +169,7 @@ function UserInfoTable({
           if (result.data?.status) {
             setIsEditClicked(false);
             fetchPageData(presentPage, false);
+            setIsOverlay(false);
           } else {
             setEditError({ serverMessage: result.data?.message });
           }
@@ -183,6 +185,7 @@ function UserInfoTable({
     if (isRemoveFormValidated && Object.keys(removeFormError).length === 0) {
       (async () => {
         try {
+          setFormLoading(true);
           const result = await axios.post(
             "http://localhost:9000/client/delete",
             {
@@ -194,11 +197,14 @@ function UserInfoTable({
           if (result.data?.status) {
             setIsRemoveClicked(false);
             fetchPageData(presentPage, true);
+            setIsOverlay(false);
           } else {
-            setRemoveFormError({ adminError: result.data?.message });
+            setRemoveFormError({ serverMessage: result.data?.message });
           }
         } catch (err) {
           console.log(err);
+        } finally {
+          setFormLoading(false);
         }
       })();
     }
@@ -347,7 +353,7 @@ function UserInfoTable({
           name="rfid"
           value={editRfid}
           onChange={handleEditInput}
-          placeholder="RFID NO.."
+          placeholder="RFID Number"
         />
         <p>{editError.nameError}</p>
         <input
@@ -355,7 +361,8 @@ function UserInfoTable({
           name="name"
           value={editName}
           onChange={handleEditInput}
-          placeholder="Student Name.."
+          placeholder="Student Name"
+          style={{ textTransform: "capitalize" }}
         />
         <p>{editError.rollNumberError}</p>
         <input
@@ -363,7 +370,8 @@ function UserInfoTable({
           name="rollnumber"
           value={editRollNumber}
           onChange={handleEditInput}
-          placeholder="Roll Number.."
+          placeholder="Roll Number"
+          style={{ textTransform: "uppercase" }}
         />
         <p>{editError.adminError}</p>
         <label>
@@ -374,7 +382,10 @@ function UserInfoTable({
           />
           <button
             className="material-symbols-outlined"
-            onClick={handlePasswordVisibility}
+            onClick={(e) => {
+              e.preventDefault();
+              handlePasswordVisibility(editPasswordRef);
+            }}
           >
             {vissibility ? `visibility` : `visibility_off`}
           </button>
@@ -390,16 +401,36 @@ function UserInfoTable({
         className={`remove-form ${isRemoveClicked ? `open` : ``}`}
         onSubmit={handleRemoveForm}
       >
+        <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
+        <div className={`progress-bar ${formLoading ? `open` : ``}`}>
+          <div className="progress-bar-value"></div>
+        </div>
+        <div className="heading-sec">
+          <h1>Remove User</h1>
+        </div>
+        <p>{removeFormError?.adminError}</p>
         <label>
-          <p>{removeFormError?.adminError}</p>
           <input
             type="password"
             placeholder="Admin Password.."
             ref={removeFormInputRef}
           />
-          <button className="material-symbols-outlined">visibility</button>
+          <button
+            className="material-symbols-outlined"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePasswordVisibility(removeFormInputRef);
+            }}
+          >
+            {vissibility ? `visibility` : `visibility_off`}
+          </button>
         </label>
-        <button type="submit">Submit</button>
+        <div className="form-footer-sec">
+          <p>{removeFormError?.serverMessage}</p>
+          <button type="submit" className="submit-btn">
+            Submit
+          </button>
+        </div>
       </form>
     </>
   );

@@ -25,8 +25,9 @@ function HomePage() {
   const [searchRefresh, setSearchRefresh] = useState(false);
   const [initialRefresh, setInitialRefresh] = useState(true);
   const [searchInputClear, setSearchInputClear] = useState(false);
-  const [isFormLoading, setIsFormLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
   const [isOverlay, setIsOverlay] = useState(false);
+  const [serverStatus, setServerStatus] = useState(false);
   const addUserFormRef = useRef(null);
   const searchInputRef = useRef(null);
   const searchUser = async (query) => {
@@ -41,6 +42,7 @@ function HomePage() {
   const handleAddUser = () => {
     setIsAddUserBtnClicked(true);
     setIsOverlay(true);
+    setAddUserFormError({});
   };
   const handleAddUserForm = (e) => {
     e.preventDefault();
@@ -121,20 +123,26 @@ function HomePage() {
     if (isAddUserFormValidated && Object.keys(addUserFormErorr).length === 0) {
       (async () => {
         try {
-          setIsFormLoading(true);
+          setFormLoading(true);
           const result = await axios.post(
             "http://localhost:9000/client/adduser",
             addUserData
           );
           if (result.data?.status) {
+            setServerStatus(true);
             setAddUserFormError({ serverMessage: result.data?.message });
           } else {
-            setAddUserFormError({ serverMessage: result.data?.message });
+            setServerStatus(false);
+            if (result.data?.exisist) {
+              setAddUserFormError({ rfidError: result.data?.message });
+            } else {
+              setAddUserFormError({ serverMessage: result.data?.message });
+            }
           }
         } catch (error) {
           console.log(error);
         } finally {
-          setIsFormLoading(false);
+          setFormLoading(false);
         }
       })();
     }
@@ -219,26 +227,32 @@ function HomePage() {
           onSubmit={handleAddUserForm}
           ref={addUserFormRef}
         >
+          <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
+          <div className={`progress-bar ${formLoading ? `open` : ``}`}>
+            <div className="progress-bar-value"></div>
+          </div>
           <div className="heading-sec">
             <h1>Add New User</h1>
           </div>
           <p>{addUserFormErorr.rfidError}</p>
-          <input type="text" placeholder="Student RFID..." />
+          <input type="text" placeholder="Student RFID" />
           <p>{addUserFormErorr.nameError}</p>
-          <input type="text" placeholder="Student Name..." />
+          <input type="text" placeholder="Student Name" />
           <p>{addUserFormErorr.rollNumberError}</p>
           <input type="text" placeholder="Student RollNumber" />
           <div className="form-footer-sec">
-            <p>{addUserFormErorr.serverMessage}</p>
+            <p style={{ color: `${serverStatus ? `green` : `red`}` }}>
+              {addUserFormErorr?.serverMessage}
+            </p>
             <div className="btn-sec">
-              <button type="submit" className="submit-btn">
-                Submit
-              </button>
               <button
                 className="material-symbols-outlined refresh-btn"
                 onClick={handleRefresh}
               >
                 refresh
+              </button>
+              <button type="submit" className="submit-btn">
+                Submit
               </button>
             </div>
           </div>

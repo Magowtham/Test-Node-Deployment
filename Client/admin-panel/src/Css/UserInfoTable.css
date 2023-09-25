@@ -35,98 +35,13 @@ table th {
   background-color: mediumslateblue;
   color: #fff;
   border: 1px solid black;
-}
-.edit-form,
-.remove-form {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  z-index: 999;
-  visibility: hidden;
-}
-.edit-form.open,
-.remove-form.open {
-  visibility: visible;
-}
-.edit-form {
-  padding: 20px 40px;
-  width: 350px;
-  border-radius: 8px;
-  background: #fff;
-  border: 0;
-}
-.edit-form .heading-sec {
-  text-align: center;
-}
-.edit-form .heading-sec h1 {
-  font-size: 1.8rem;
-  color: black;
-}
-.edit-form input {
-  font-size: 0.9rem;
-  padding: 11px 10px;
-  border: 1px solid mediumslateblue;
-  border-radius: 4px;
-}
-.edit-form input[type="text"] {
-  font-size: 1rem;
-  color: black;
-}
-.edit-form input::placeholder {
-  font-size: 1rem;
-}
-.edit-form input:focus {
-  outline: 2px solid mediumslateblue;
-}
-.edit-form p {
-  margin-top: 20px;
-  color: red;
-}
-.edit-form label {
-  position: relative;
-}
-.edit-form label input {
-  width: 100%;
-}
-.edit-form label button {
-  font-size: 1.2rem;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-.edit-form label button {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.form-footer-sec {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-.edit-form .form-footer-sec p {
-  margin-top: 0px;
-}
-.edit-form .form-footer-sec .save-btn {
-  padding: 10px 30px;
   font-size: 1rem;
   font-weight: 900;
-  background-color: mediumslateblue;
-  border: 0;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
 }
-.edit-form .save-btn:hover {
-  transform: scale(1.1);
-  transition: transform 0.1s ease-in;
+table tbody {
+  font-size: 1rem;
+  font-weight: 500;
 }
-
 table tbody .manage-sec {
   text-align: center;
 }
@@ -139,6 +54,7 @@ table tbody .edit-btn {
   background: none;
   cursor: pointer;
   transform: translateX(-20px);
+  font-size: 1rem;
 }
 
 table tbody .edit-btn span {
@@ -155,6 +71,7 @@ table tbody .delete-btn {
   background: none;
   cursor: pointer;
   transform: translateX(20px);
+  font-size: 1rem;
 }
 
 table tbody .delete-btn span {
@@ -194,7 +111,180 @@ table tbody .expense-history-btn:hover {
   transform: translateX(20px) scale(1.1);
   transition: transform 0.1s ease-in;
 }
-
+.edit-form,
+.remove-form {
+  position: absolute;
+  flex-direction: column;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 999;
+  display: none;
+}
+.edit-form.open,
+.remove-form.open {
+  display: flex;
+}
+.edit-form {
+  padding: 20px 40px;
+  width: 350px;
+  border-radius: 8px;
+  background: #fff;
+  border: 0;
+}
+.edit-form .heading-sec {
+  text-align: center;
+}
+.edit-form .heading-sec h1 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: black;
+}
+.edit-form input {
+  font-size: 1rem;
+  padding: 11px 10px;
+  border: 1px solid mediumslateblue;
+  border-radius: 4px;
+}
+.edit-form input[type="text"] {
+  font-size: 1rem;
+  color: black;
+}
+.edit-form input::placeholder {
+  font-size: 1rem;
+}
+.edit-form input:focus {
+  outline: 2px solid mediumslateblue;
+}
+.edit-form p {
+  margin-top: 20px;
+  margin-bottom: 1px;
+  font-size: 1rem;
+  text-transform: capitalize;
+  color: red;
+}
+.edit-form label {
+  position: relative;
+}
+.edit-form label input {
+  width: 100%;
+}
+.edit-form label button {
+  font-size: 1.2rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.edit-form label button {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+.edit-form .form-footer-sec {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.edit-form .form-footer-sec p {
+  margin-top: 0px;
+}
+.edit-form .form-footer-sec .save-btn {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 900;
+  background-color: mediumslateblue;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.edit-form .save-btn:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in;
+}
+.remove-form {
+  border: 2px solid red;
+  padding: 20px 40px;
+  width: 350px;
+  border-radius: 8px;
+  background: #fff;
+  border: 0;
+}
+.remove-form .heading-sec {
+  text-align: center;
+}
+.remove-form .heading-sec h1 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-transform: capitalize;
+}
+.remove-form p {
+  margin-top: 20px;
+  margin-bottom: 1px;
+  font-size: 1rem;
+  text-transform: capitalize;
+  color: red;
+}
+.remove-form label {
+  display: flex;
+  position: relative;
+}
+.remove-form label input {
+  font-size: 1rem;
+  padding: 11px 10px;
+  border: 1px solid mediumslateblue;
+  border-radius: 4px;
+  width: 100%;
+}
+.remove-form label [type="text"] {
+  font-size: 1rem;
+  color: black;
+}
+.remove-form label ::placeholder {
+  font-size: 1rem;
+}
+.remove-form label input:focus {
+  outline: 2px solid mediumslateblue;
+}
+.remove-form label button {
+  font-size: 1.2rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.remove-form label button {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+.remove-form .form-footer-sec {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+.remove-form .form-footer-sec p {
+  margin-top: 0px;
+}
+.remove-form .form-footer-sec .submit-btn {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 900;
+  background-color: mediumslateblue;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.remove-form .submit-btn:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in;
+}
 @media screen and (max-width: 1700px) {
   table tbody .edit-btn {
     transform: translateX(-9px);
