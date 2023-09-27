@@ -11,12 +11,14 @@
   height: 85%;
   width: 80%;
   margin: auto;
+  /* border: 2px solid green; */
 }
 .paginater-sec {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 15%;
+  /* border: 2px solid red; */
 }
 table {
   width: 100%;
@@ -292,11 +294,31 @@ table tbody .expense-history-btn:hover {
   table tbody .delete-btn {
     transform: translateX(9px);
   }
+  table tbody .edit-btn:hover {
+    transform: translateX(-9px) scale(1.1);
+  }
+  table tbody .delete-btn:hover {
+    transform: translateX(9px) scale(1.1);
+  }
   table tbody .recharge-history-btn {
     transform: translateX(-9px);
   }
   table tbody .expense-history-btn {
     transform: translateX(9px);
+  }
+}
+@media screen and (max-width: 1600px) {
+  table tbody .delete-btn {
+    transform: translateX(5px);
+  }
+  table tbody .edit-btn {
+    transform: translateX(-5px);
+  }
+  table tbody .delete-btn:hover {
+    transform: translateX(5px) scale(1.1);
+  }
+  table tbody .edit-btn:hover {
+    transform: translateX(-5px) scale(1.1);
   }
 }
 @media screen and (max-width: 1300px) {
@@ -310,36 +332,55 @@ table tbody .expense-history-btn:hover {
 }
 
 @media screen and (max-width: 1200px) {
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-
   thead tr {
     display: none;
   }
 
   tr {
     margin: 0 0 1rem 0;
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 2px solid black;
+    border-radius: 4px;
   }
 
   tbody tr:before {
-    counter-increment: my-sec-counter;
     content: "";
     display: block;
     height: 1px;
   }
 
   td {
-    border: none;
-    margin-right: 0%;
-
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+  }
+  td:nth-of-type(1) {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+  td:nth-of-type(2) {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+  td:nth-of-type(3) {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+  td:nth-of-type(4) {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+  }
+  td:nth-of-type(5) {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
   }
 
   td:before {
@@ -347,14 +388,13 @@ table tbody .expense-history-btn:hover {
     width: 50%;
     float: left;
     box-sizing: border-box;
-    padding-left: 5px;
+    padding: 8px;
     color: mediumslateblue;
     font-size: 1rem;
   }
 
   td:nth-of-type(1):before {
     content: "Sl. NO.";
-    color: #fff;
   }
   td:nth-of-type(2):before {
     content: "RFID NO.";
@@ -371,21 +411,25 @@ table tbody .expense-history-btn:hover {
   table tbody .manage-sec {
     display: flex;
   }
-  table tbody .slno {
-    background: mediumslateblue;
-    color: #fff;
-  }
+
   table tbody .manage-sec {
-    float: left;
     display: flex;
     width: 30%;
     justify-content: space-evenly;
+    position: absolute;
+    bottom: 0;
+    transform: translateY(2.5%);
+    left: 0;
+    padding: 10px;
+    border: 0;
   }
   .view-details-sec {
     display: flex;
     width: 70%;
-    padding: 8px;
+    padding: 10px;
     justify-content: space-evenly;
+    align-self: flex-end;
+    border: 0;
   }
   table tbody .edit-btn {
     transform: translateX(0px);
@@ -393,11 +437,26 @@ table tbody .expense-history-btn:hover {
   table tbody .delete-btn {
     transform: translateX(0px);
   }
+  table tbody .edit-btn:hover {
+    transform: translateX(0px) scale(1.1);
+  }
+  table tbody .delete-btn:hover {
+    transform: translateX(0px) scale(1.1);
+  }
   table tbody .recharge-history-btn {
     transform: translateX(0px);
+    padding: 10px;
+    font-weight: 900;
+    margin: 2px 0px;
   }
   table tbody .expense-history-btn {
     transform: translateX(0px);
+    padding: 10px;
+    font-weight: 900;
+  }
+  .paginater-sec {
+    width: 80%;
+    margin: auto;
   }
 }
 

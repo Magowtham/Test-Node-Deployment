@@ -69,6 +69,9 @@
 }
 .login-container form .form-footer-sec {
   margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .login-container form .form-footer-sec p {
   margin-top: 0;

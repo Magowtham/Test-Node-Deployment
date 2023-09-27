@@ -11,11 +11,22 @@ function AdminLogin() {
   const [visibility, setVisibility] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const editPasswordRef = useRef(null);
-  const handleLoginForm = (e) => {
-    e.preventDefault();
+  const loginFormRef = useRef(null);
+  const handleLoginForm = (e, keyEvent) => {
+    if (!keyEvent) {
+      e.preventDefault();
+    }
     setIsLoginValidated(false);
     setLoginFormError({});
-    setLoginData({ name: e.target[0].value, password: e.target[1].value });
+    if (!keyEvent) {
+      setLoginData({ name: e.target[0].value, password: e.target[1].value });
+    } else {
+      setLoginData({
+        name: loginFormRef.current[0].value,
+        password: loginFormRef.current[1].value,
+      });
+    }
+
     setIsLoginFormSubmited(true);
   };
   const loginFormValidater = () => {
@@ -34,6 +45,15 @@ function AdminLogin() {
     setVisibility(!visibility);
     editPasswordRef.current.type = visibility ? `password` : `text`;
   };
+  const handleEnterKey = (e) => {
+    if (e.key === "Enter") {
+      handleLoginForm(loginFormRef.current, true);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("keydown", handleEnterKey);
+    return () => window.removeEventListener("keydown", handleEnterKey);
+  });
   useEffect(() => {
     if (isLoginFormSubmitted) {
       setIsLoginValidated(loginFormValidater());
@@ -75,7 +95,7 @@ function AdminLogin() {
   return (
     <>
       <div className="login-container">
-        <form onSubmit={handleLoginForm}>
+        <form onSubmit={handleLoginForm} ref={loginFormRef}>
           <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
           <div className={`progress-bar ${formLoading ? `open` : ``}`}>
             <div className="progress-bar-value"></div>

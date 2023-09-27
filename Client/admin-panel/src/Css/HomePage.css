@@ -111,7 +111,7 @@ nav .search-bar-sec .search-bar button:hover {
 }
 
 .add-user-form {
-  padding: 20px 40px;
+  padding: 22px 40px;
   width: 350px;
   border-radius: 8px;
   background: #fff;
@@ -265,7 +265,6 @@ nav .search-bar-sec .search-bar button:hover {
 @media screen and (max-width: 1100px) {
   nav {
     justify-content: space-between;
-    border: 2px solid red;
   }
   nav .logo-sec {
     width: 60px;
@@ -296,14 +295,9 @@ nav .search-bar-sec .search-bar button:hover {
     padding: 20px 0px;
     min-width: 550px;
   }
-
   .footer-sec button {
-    padding: 8px 8px;
-    font-size: 0.8rem;
+    padding: 12px 8px;
     font-weight: 600;
-  }
-  .footer-sec button span {
-    font-size: 1.5rem;
   }
 }
 

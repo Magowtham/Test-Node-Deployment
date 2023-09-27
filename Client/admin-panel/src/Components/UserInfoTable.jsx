@@ -43,8 +43,11 @@ function UserInfoTable({
   const [removeRfid, setRemoveRfid] = useState("");
   const [vissibility, setVissibility] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const editFormRef = useRef(null);
+  const removeFormRef = useRef(null);
   const removeFormInputRef = useRef(null);
   const editPasswordRef = useRef(null);
+
   const fetchPageData = async (pageNumber, totalCount) => {
     try {
       setIsTableLoading(true);
@@ -92,16 +95,28 @@ function UserInfoTable({
     setEditError(error);
     return true;
   };
-  const handleEditForm = (e) => {
-    e.preventDefault();
-    setEditData({
-      admin: adminUserName,
-      rfid: e.target[0].value,
-      name: e.target[1].value,
-      rollnumber: e.target[2].value,
-      password: e.target[3].value,
-    });
+  const handleEditForm = (e, keyEvent) => {
+    if (!keyEvent) {
+      e.preventDefault();
+    }
     setIsEditValidated(false);
+    if (!keyEvent) {
+      setEditData({
+        admin: adminUserName,
+        rfid: e.target[0].value,
+        name: e.target[1].value,
+        rollnumber: e.target[2].value,
+        password: e.target[3].value,
+      });
+    } else {
+      setEditData({
+        admin: adminUserName,
+        rfid: editFormRef.current[0].value,
+        name: editFormRef.current[1].value,
+        rollnumber: editFormRef.current[2].value,
+        password: editFormRef.current[3].value,
+      });
+    }
     setIsEditSubmited(true);
   };
 
@@ -137,10 +152,16 @@ function UserInfoTable({
     setRemoveFormError(error);
     return true;
   };
-  const handleRemoveForm = (e) => {
-    e.preventDefault();
+  const handleRemoveForm = (e, keyEvent) => {
+    if (!keyEvent) {
+      e.preventDefault();
+    }
     setIsRemoveFormValidated(false);
-    setRemoveFormData(e.target[0].value);
+    if (!keyEvent) {
+      setRemoveFormData(e.target[0].value);
+    } else {
+      setRemoveFormData(removeFormRef.current[0].value);
+    }
     setIsRemoveSubmited(true);
   };
   const handleRemove = (index) => {
@@ -156,7 +177,16 @@ function UserInfoTable({
     setVissibility(!vissibility);
     elementRef.current.type = vissibility ? `password` : `text`;
   };
-
+  const handleEnterKey = (e) => {
+    if (e.key === "Enter") {
+      if (isEditClicked) handleEditForm(editFormRef.current, true);
+      if (isRemoveClicked) handleRemoveForm(removeFormRef.current, true);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("keydown", handleEnterKey);
+    return () => window.removeEventListener("keydown", handleEnterKey);
+  });
   useEffect(() => {
     if (isEditValidated && Object.keys(editError).length === 0) {
       (async () => {
@@ -279,7 +309,7 @@ function UserInfoTable({
                     {presentPage * pageSize + (index + 1)}
                   </td>
                   <td>{user?.rfid}</td>
-                  <td>{user?.name}</td>
+                  <td style={{ textTransform: "capitalize" }}>{user?.name}</td>
                   <td>{user?.rollnumber}</td>
                   <td className={`${reductionStatus ? `hide` : ``}`}>
                     {user?.balance}
@@ -339,6 +369,7 @@ function UserInfoTable({
       <form
         className={`edit-form ${isEditClicked ? `open` : ``}`}
         onSubmit={handleEditForm}
+        ref={editFormRef}
       >
         <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
         <div className={`progress-bar ${formLoading ? `open` : ``}`}>
@@ -400,6 +431,7 @@ function UserInfoTable({
       <form
         className={`remove-form ${isRemoveClicked ? `open` : ``}`}
         onSubmit={handleRemoveForm}
+        ref={removeFormRef}
       >
         <div className={`form-overlay ${formLoading ? `open` : ``}`}></div>
         <div className={`progress-bar ${formLoading ? `open` : ``}`}>

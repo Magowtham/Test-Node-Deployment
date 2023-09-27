@@ -44,15 +44,26 @@ function HomePage() {
     setIsOverlay(true);
     setAddUserFormError({});
   };
-  const handleAddUserForm = (e) => {
-    e.preventDefault();
+  const handleAddUserForm = (e, keyEvent) => {
+    if (!keyEvent) {
+      e.preventDefault();
+    }
     setIsAddUserFormValidated(false);
     setAddUserFormError({});
-    setAddUserData({
-      rfid: e.target[0].value,
-      name: e.target[1].value,
-      rollnumber: e.target[2].value,
-    });
+    if (!keyEvent) {
+      setAddUserData({
+        rfid: e.target[0].value,
+        name: e.target[1].value,
+        rollnumber: e.target[2].value,
+      });
+    } else {
+      setAddUserData({
+        rfid: addUserFormRef.current[0].value,
+        name: addUserFormRef.current[1].value,
+        rollnumber: addUserFormRef.current[2].value,
+      });
+    }
+
     setIsAddUserFormSubmited(true);
   };
   const addUserFormValidater = () => {
@@ -90,6 +101,15 @@ function HomePage() {
     state.auth = false;
     navigate("/login");
   };
+  const handleEnterKey = (e) => {
+    if (e.key === "Enter") {
+      if (isAddUserBtnClicked) handleAddUserForm(addUserFormRef.current, true);
+    }
+  };
+  useEffect(() => {
+    window.addEventListener("keydown", handleEnterKey);
+    return () => window.removeEventListener("keydown", handleEnterKey);
+  });
   useEffect(() => {
     if (state?.auth) {
       setAdminUserName(state?.admin);

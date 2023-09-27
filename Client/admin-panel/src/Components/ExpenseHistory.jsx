@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Paginater from "./Paginater";
+import "../Css/ExpenseHistory.css";
 
 function ExpenseHistory() {
   const { state } = useLocation();
@@ -40,34 +41,49 @@ function ExpenseHistory() {
   }, []);
   return (
     <>
-      <table>
-        <thead>
-          <tr>
-            <th>SL. NO.</th>
-            <th>Date</th>
-            <th>Call Start Time</th>
-            <th>Call End Time</th>
-            <th>Reducted Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pageData?.map((element, index) => (
-            <tr key={index}>
-              <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
-              <td>{element?.date}</td>
-              <td>{element?.callStartTime}</td>
-              <td>{element?.callEndTime}</td>
-              <td>{element?.reductedAmount}</td>
+      <div
+        className={`empty-animation-container ${
+          totalHistoryCount !== 0 ? `hide` : ``
+        }`}
+      >
+        <h1>Empty Table</h1>
+      </div>
+      <div
+        className={`expense-table-container ${
+          totalHistoryCount === 0 ? `hide` : ``
+        }`}
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>SL. NO.</th>
+              <th>Date</th>
+              <th>Call Start Time</th>
+              <th>Call End Time</th>
+              <th>Reducted Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <Paginater
-        totalElements={totalHistoryCount}
-        pageSize={pageSize}
-        handlePageChange={handleHistoryPage}
-        isVisible={true}
-      />
+          </thead>
+          <tbody>
+            {pageData?.map((element, index) => (
+              <tr key={index}>
+                <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
+                <td>{element?.date}</td>
+                <td>{element?.callStartTime}</td>
+                <td>{element?.callEndTime}</td>
+                <td>{element?.reductedAmount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className={`paginater-sec ${totalHistoryCount === 0 ? `hide` : ``}`}>
+        <Paginater
+          totalElements={totalHistoryCount}
+          pageSize={pageSize}
+          handlePageChange={handleHistoryPage}
+          isVisible={true}
+        />
+      </div>
     </>
   );
 }

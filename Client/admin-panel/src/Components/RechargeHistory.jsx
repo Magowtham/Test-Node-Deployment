@@ -1,7 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Paginater from "./Paginater";
+import "../Css/RechargeHistory.css";
 
 function RechargeHistory() {
   const { state } = useLocation();
@@ -12,7 +13,6 @@ function RechargeHistory() {
   const [presentPage, setPresentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const fetchPageData = async (pageNumber, totalCount) => {
-    console.log(pageNumber);
     try {
       const result = await axios.get(
         `http://localhost:9000/client/recharge_history?rfid=${
@@ -35,6 +35,7 @@ function RechargeHistory() {
     fetchPageData(e.selected, false);
     setPresentPage(e.selected + 1);
   };
+
   useEffect(() => {
     if (!state?.auth) {
       navigate("/login");
@@ -47,34 +48,50 @@ function RechargeHistory() {
       triggerOnce = true;
     }
   }, []);
+
   return (
     <>
-      <table>
-        <thead>
-          <tr>
-            <th>SL. NO.</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pageData?.map((element, index) => (
-            <tr key={index}>
-              <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
-              <td>{element?.date}</td>
-              <td>{element?.time}</td>
-              <td>{element?.amount}</td>
+      <div
+        className={`empty-animation-container ${
+          totalHistoryCount !== 0 ? `hide` : ``
+        }`}
+      >
+        <h1>Empty Table</h1>
+      </div>
+      <div
+        className={`recharge-table-container ${
+          totalHistoryCount === 0 ? `hide` : ``
+        }`}
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>SL. NO.</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <Paginater
-        totalElements={totalHistoryCount}
-        pageSize={pageSize}
-        handlePageChange={handleHistoryPage}
-        isVisible={true}
-      />
+          </thead>
+          <tbody>
+            {pageData?.map((element, index) => (
+              <tr key={index}>
+                <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
+                <td>{element?.date}</td>
+                <td>{element?.time}</td>
+                <td>{element?.amount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className={`paginater-sec ${totalHistoryCount === 0 ? `hide` : ``}`}>
+        <Paginater
+          totalElements={totalHistoryCount}
+          pageSize={pageSize}
+          handlePageChange={handleHistoryPage}
+          isVisible={true}
+        />
+      </div>
     </>
   );
 }

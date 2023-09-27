@@ -19,9 +19,8 @@
   left: 0;
   transform: translateX(0%);
   position: sticky;
-  box-shadow: 0;
-  box-shadow: none;
   border: 2px solid 1px;
+  width: 100%;
 }
 .pagination-container.hide {
   display: none;
