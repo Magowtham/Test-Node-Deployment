@@ -1,19 +1,22 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import TableLoader from "./TableLoader";
 import Paginater from "./Paginater";
+
 import "../Css/RechargeHistory.css";
 
 function RechargeHistory() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [pageData, setPageData] = useState([]);
-  const [totalHistoryCount, setTotalHistoryCount] = useState(0);
+  const [totalHistoryCount, setTotalHistoryCount] = useState(null);
   const [pageSize] = useState(14);
   const [presentPage, setPresentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(false);
   const fetchPageData = async (pageNumber, totalCount) => {
     try {
+      setIsTableLoading(true);
       const result = await axios.get(
         `http://localhost:9000/client/recharge_history?rfid=${
           state.rfid
@@ -28,7 +31,7 @@ function RechargeHistory() {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsTableLoading(false);
     }
   };
   const handleHistoryPage = (e) => {
@@ -53,17 +56,17 @@ function RechargeHistory() {
     <>
       <div
         className={`empty-animation-container ${
-          totalHistoryCount !== 0 ? `hide` : ``
+          totalHistoryCount === 0 ? `` : `hide`
         }`}
       >
         <h1>Empty Table</h1>
       </div>
-      <div
-        className={`recharge-table-container ${
-          totalHistoryCount === 0 ? `hide` : ``
-        }`}
-      >
-        <table>
+      <div className="recharge-table-container">
+        <table
+          className={`${
+            totalHistoryCount === null || totalHistoryCount === 0 ? `hide` : ``
+          }`}
+        >
           <thead>
             <tr>
               <th>SL. NO.</th>
@@ -72,7 +75,7 @@ function RechargeHistory() {
               <th>Amount</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={`${isTableLoading ? `hide` : ``}`}>
             {pageData?.map((element, index) => (
               <tr key={index}>
                 <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
@@ -83,8 +86,17 @@ function RechargeHistory() {
             ))}
           </tbody>
         </table>
+        <div
+          className={`table-loader-container ${isTableLoading ? `` : `hide`}`}
+        >
+          <TableLoader />
+        </div>
       </div>
-      <div className={`paginater-sec ${totalHistoryCount === 0 ? `hide` : ``}`}>
+      <div
+        className={`paginater-sec ${
+          totalHistoryCount === null || totalHistoryCount === 0 ? `hide` : ``
+        }`}
+      >
         <Paginater
           totalElements={totalHistoryCount}
           pageSize={pageSize}

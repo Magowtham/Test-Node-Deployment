@@ -5,7 +5,6 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import UserInfoTable from "./UserInfoTable";
 import RechargeHistory from "./RechargeHistory";
 import ExpenseHistory from "./ExpenseHistory";
-
 function HomePage() {
   const { state } = useLocation();
   const navigate = useNavigate();

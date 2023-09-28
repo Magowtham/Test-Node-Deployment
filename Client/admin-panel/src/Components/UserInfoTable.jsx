@@ -3,6 +3,7 @@ import { useFetcher, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Paginater from "./Paginater";
 import "../Css/UserInfoTable.css";
+import TableLoader from "./TableLoader";
 
 function UserInfoTable({
   adminUserName,
@@ -295,68 +296,63 @@ function UserInfoTable({
               <th>{reductionStatus ? `Recharge` : `View`} Details</th>
             </tr>
           </thead>
-          {isTableLoading ? (
-            <tbody>
-              <tr>
-                <td>Loading...</td>
+          <tbody className={`${isTableLoading ? `hide` : ``}`}>
+            {pageData?.map((user, index) => (
+              <tr key={index + 1}>
+                <td className="slno">{presentPage * pageSize + (index + 1)}</td>
+                <td>{user?.rfid}</td>
+                <td style={{ textTransform: "capitalize" }}>{user?.name}</td>
+                <td>{user?.rollnumber}</td>
+                <td className={`${reductionStatus ? `hide` : ``}`}>
+                  {user?.balance}
+                </td>
+                <td className="manage-sec">
+                  <button
+                    onClick={() => {
+                      handleEdit(index);
+                    }}
+                    className="edit-btn"
+                  >
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleRemove(index);
+                    }}
+                    className="delete-btn"
+                  >
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+                <td className="view-details-sec">
+                  <button
+                    onClick={() => {
+                      handleRechargeHistory(user?.rfid);
+                    }}
+                    className="recharge-history-btn"
+                  >
+                    Recharge
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleExpenseHistory(user?.rfid);
+                    }}
+                    className={`expense-history-btn ${
+                      reductionStatus ? `hide` : ``
+                    }`}
+                  >
+                    Expense
+                  </button>
+                </td>
               </tr>
-            </tbody>
-          ) : (
-            <tbody>
-              {pageData?.map((user, index) => (
-                <tr key={index + 1}>
-                  <td className="slno">
-                    {presentPage * pageSize + (index + 1)}
-                  </td>
-                  <td>{user?.rfid}</td>
-                  <td style={{ textTransform: "capitalize" }}>{user?.name}</td>
-                  <td>{user?.rollnumber}</td>
-                  <td className={`${reductionStatus ? `hide` : ``}`}>
-                    {user?.balance}
-                  </td>
-                  <td className="manage-sec">
-                    <button
-                      onClick={() => {
-                        handleEdit(index);
-                      }}
-                      className="edit-btn"
-                    >
-                      <span class="material-symbols-outlined">edit</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleRemove(index);
-                      }}
-                      className="delete-btn"
-                    >
-                      <span class="material-symbols-outlined">delete</span>
-                    </button>
-                  </td>
-                  <td className="view-details-sec">
-                    <button
-                      onClick={() => {
-                        handleRechargeHistory(user?.rfid);
-                      }}
-                      className="recharge-history-btn"
-                    >
-                      Recharge
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleExpenseHistory(user?.rfid);
-                      }}
-                      className={`expense-history-btn ${
-                        reductionStatus ? `hide` : ``
-                      }`}
-                    >
-                      Expense
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          )}
+            ))}
+          </tbody>
         </table>
+        <div
+          className={`table-loader-container ${isTableLoading ? `` : `hide`}`}
+        >
+          <TableLoader />
+        </div>
       </div>
       <div className="paginater-sec">
         <Paginater

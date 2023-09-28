@@ -2,18 +2,19 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Paginater from "./Paginater";
+import TableLoader from "./TableLoader";
 import "../Css/ExpenseHistory.css";
 
 function ExpenseHistory() {
   const { state } = useLocation();
   const [pageData, setPageData] = useState([]);
-  const [totalHistoryCount, setTotalHistoryCount] = useState(0);
+  const [totalHistoryCount, setTotalHistoryCount] = useState(null);
   const [pageSize] = useState(15);
   const [presentPage, setPresentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTableLoading, setIsTableLoading] = useState(false);
   const fetchPageData = async (pageNumber, totalCount) => {
-    console.log(pageNumber);
     try {
+      setIsTableLoading(true);
       const result = await axios.get(
         `http://localhost:9000/client/expense_history?rfid=${state.rfid}&pageStart=${pageNumber}&pageSize=${pageSize}`
       );
@@ -25,7 +26,7 @@ function ExpenseHistory() {
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false);
+      setIsTableLoading(false);
     }
   };
   const handleHistoryPage = (e) => {
@@ -43,17 +44,17 @@ function ExpenseHistory() {
     <>
       <div
         className={`empty-animation-container ${
-          totalHistoryCount !== 0 ? `hide` : ``
+          totalHistoryCount === 0 ? `` : `hide`
         }`}
       >
         <h1>Empty Table</h1>
       </div>
-      <div
-        className={`expense-table-container ${
-          totalHistoryCount === 0 ? `hide` : ``
-        }`}
-      >
-        <table>
+      <div className="expense-table-container">
+        <table
+          className={`${
+            totalHistoryCount === null || totalHistoryCount === 0 ? `hide` : ``
+          }`}
+        >
           <thead>
             <tr>
               <th>SL. NO.</th>
@@ -63,7 +64,7 @@ function ExpenseHistory() {
               <th>Reducted Amount</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={`${isTableLoading ? `hide` : ``}`}>
             {pageData?.map((element, index) => (
               <tr key={index}>
                 <td>{(presentPage - 1) * pageSize + (index + 1)}</td>
@@ -75,8 +76,17 @@ function ExpenseHistory() {
             ))}
           </tbody>
         </table>
+        <div
+          className={`table-loader-container ${isTableLoading ? `` : `hide`}`}
+        >
+          <TableLoader />
+        </div>
       </div>
-      <div className={`paginater-sec ${totalHistoryCount === 0 ? `hide` : ``}`}>
+      <div
+        className={`paginater-sec ${
+          totalHistoryCount === 0 || totalHistoryCount === null ? `hide` : ``
+        }`}
+      >
         <Paginater
           totalElements={totalHistoryCount}
           pageSize={pageSize}

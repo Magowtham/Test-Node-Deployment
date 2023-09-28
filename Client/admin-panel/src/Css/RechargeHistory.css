@@ -16,22 +16,12 @@
   justify-content: center;
   height: 15%;
 }
-.paginater-sec.hide {
-  display: none;
-}
 .empty-animation-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 85%;
-  width: 80%;
-  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }
-.empty-animation-container.hide,
-.recharge-table-container.hide {
-  display: none;
-}
-
 @media screen and (max-width: 1200px) {
   .recharge-table-container td:nth-of-type(1):before {
     content: "Sl. NO.";
