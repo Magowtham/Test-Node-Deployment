@@ -1,4 +1,3 @@
-const { query } = require("express");
 const UserService = require("../services/user_service");
 
 exports.addUser = async (req, res) => {

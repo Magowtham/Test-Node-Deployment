@@ -256,6 +256,7 @@ class UserService {
         { rfid },
         { balance: 1, _id: 0 }
       );
+      console.log(dbResult);
       if (!dbResult) {
         return { status: false, message: "User Not Exists" };
       }
@@ -293,7 +294,7 @@ class UserService {
       if (!dbResult) {
         return { status: false, message: "User Not Exists" };
       }
-
+      console.log(reductedBalance);
       await addUserModel.updateOne(
         { rfid },
         {
