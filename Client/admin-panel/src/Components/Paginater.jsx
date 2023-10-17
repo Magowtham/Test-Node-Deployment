@@ -14,7 +14,7 @@ function Paginater({ totalElements, pageSize, handlePageChange, isVisible }) {
     window.addEventListener("resize", handleMediaScreen);
     handleMediaScreen();
     return () => window.removeEventListener("resize", handleMediaScreen);
-  }, [window.innerWidth]);
+  }, []);
   return (
     <>
       <ReactPaginate

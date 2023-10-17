@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Paginater from "./Paginater";
-import TableLoader from "./TableLoader";
+import PageLoader from "./PageLoader";
 import "../Css/ExpenseHistory.css";
 
 function ExpenseHistory() {
@@ -16,15 +16,14 @@ function ExpenseHistory() {
     try {
       setIsTableLoading(true);
       const result = await axios.get(
-        `http://localhost:9000/client/expense_history?rfid=${state.rfid}&pageStart=${pageNumber}&pageSize=${pageSize}`
+        `${process.env.REACT_APP_API_URL}/expense_history?rfid=${state.rfid}&pageStart=${pageNumber}&pageSize=${pageSize}`
       );
       if (totalCount) {
         setTotalHistoryCount(result.data?.historyLength);
       }
-      console.log(result.data);
       setPageData(result.data?.history);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setIsTableLoading(false);
     }
@@ -39,6 +38,7 @@ function ExpenseHistory() {
       fetchPageData(0, true);
       triggerOnce = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -79,7 +79,7 @@ function ExpenseHistory() {
         <div
           className={`table-loader-container ${isTableLoading ? `` : `hide`}`}
         >
-          <TableLoader />
+          <pageLoader />
         </div>
       </div>
       <div

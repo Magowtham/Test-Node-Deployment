@@ -1,17 +1,18 @@
-import React from "react";
-import "./Css/App.css";
+import React, { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import HomePage from "./Components/HomePage";
-import AdminLogin from "./Components/AdminLogin";
+import "./Css/App.css";
+import PageLoader from "./Components/PageLoader";
+const HomePage = lazy(() => import("./Components/HomePage"));
+const AdminLogin = lazy(() => import("./Components/AdminLogin"));
 
 function App() {
   return (
-    <>
+    <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="*" exact Component={HomePage} />
         <Route path="/login" Component={AdminLogin} />
       </Routes>
-    </>
+    </Suspense>
   );
 }
 

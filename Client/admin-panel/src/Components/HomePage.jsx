@@ -1,7 +1,7 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import "../Css/HomePage.css";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import "../Css/HomePage.css";
 import UserInfoTable from "./UserInfoTable";
 import RechargeHistory from "./RechargeHistory";
 import ExpenseHistory from "./ExpenseHistory";
@@ -22,6 +22,7 @@ function HomePage() {
   const [isAddUserFormValidated, setIsAddUserFormValidated] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRefresh, setSearchRefresh] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [initialRefresh, setInitialRefresh] = useState(true);
   const [searchInputClear, setSearchInputClear] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
@@ -30,11 +31,21 @@ function HomePage() {
   const addUserFormRef = useRef(null);
   const searchInputRef = useRef(null);
   const searchUser = async (query) => {
-    const result = await axios.get(
-      `http://localhost:9000/client/search?query=${query}`
-    );
-    if (result.data?.status) {
-      setSearchData(result.data?.users);
+    const specialCharacterPattern = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\]/;
+    if (!specialCharacterPattern.test(query)) {
+      try {
+        setIsSearchLoading(true);
+        const result = await axios.get(
+          `http://localhost:9000/client/search?query=${query}`
+        );
+        if (result.data?.status) {
+          setSearchData(result.data?.users);
+        }
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setIsSearchLoading(false);
+      }
     }
   };
 
@@ -42,6 +53,9 @@ function HomePage() {
     setIsAddUserBtnClicked(true);
     setIsOverlay(true);
     setAddUserFormError({});
+    for (let i = 0; i < 3; i++) {
+      addUserFormRef.current[i].value = "";
+    }
   };
   const handleAddUserForm = (e, keyEvent) => {
     if (!keyEvent) {
@@ -116,6 +130,7 @@ function HomePage() {
     } else {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
   useEffect(() => {
     if (searchQuery) {
@@ -127,7 +142,6 @@ function HomePage() {
     }
   }, [searchQuery]);
   useEffect(() => {
-    console.log(searchInputClear);
     if (searchInputClear) {
       searchInputRef.current.value = "";
     }
@@ -137,6 +151,7 @@ function HomePage() {
       setIsAddUserFormValidated(addUserFormValidater());
       setIsAddUserFormSubmited(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAddUserFormSubmited]);
   useEffect(() => {
     if (isAddUserFormValidated && Object.keys(addUserFormErorr).length === 0) {
@@ -144,7 +159,7 @@ function HomePage() {
         try {
           setFormLoading(true);
           const result = await axios.post(
-            "http://localhost:9000/client/adduser",
+            `${process.env.REACT_APP_API_URL}/adduser`,
             addUserData
           );
           if (result.data?.status) {
@@ -159,12 +174,13 @@ function HomePage() {
             }
           }
         } catch (error) {
-          console.log(error);
+          console.log(error.message);
         } finally {
           setFormLoading(false);
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAddUserFormValidated]);
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
@@ -210,6 +226,7 @@ function HomePage() {
                 <UserInfoTable
                   adminUserName={adminUserName}
                   reductionStatus={reductionStatus}
+                  isSearchLoading={isSearchLoading}
                   searchData={searchData}
                   searchRefresh={searchRefresh}
                   initialRefresh={initialRefresh}
@@ -226,19 +243,19 @@ function HomePage() {
         <div className="footer-sec">
           <button className="daily-history-btn">
             Daily History
-            <span class="material-symbols-outlined">download</span>
+            <span className="material-symbols-outlined">download</span>
           </button>
           <button className="monthly-history-btn">
             Monthly History
-            <span class="material-symbols-outlined">download</span>
+            <span className="material-symbols-outlined">download</span>
           </button>
           <button onClick={handleAddUser} className="add-user-btn">
             Add Student
-            <span class="material-symbols-outlined">add</span>
+            <span className="material-symbols-outlined">add</span>
           </button>
           <button onClick={handleLogout} className="logout-btn">
             Logout
-            <span class="material-symbols-outlined">logout</span>
+            <span className="material-symbols-outlined">logout</span>
           </button>
         </div>
         <form

@@ -137,7 +137,7 @@ table tbody .expense-history-btn:hover {
 }
 .edit-form {
   padding: 20px 40px;
-  width: 350px;
+  width: 360px;
   border-radius: 8px;
   background: #fff;
   border: 0;
@@ -152,8 +152,8 @@ table tbody .expense-history-btn:hover {
 }
 .edit-form input {
   font-size: 1rem;
-  padding: 11px 10px;
-  border: 1px solid mediumslateblue;
+  padding: 13px 10px;
+  border: 2px solid mediumslateblue;
   border-radius: 4px;
 }
 .edit-form input[type="text"] {
@@ -167,7 +167,7 @@ table tbody .expense-history-btn:hover {
   outline: 2px solid mediumslateblue;
 }
 .edit-form p {
-  margin-top: 20px;
+  margin-top: 25px;
   margin-bottom: 1px;
   font-size: 1rem;
   text-transform: capitalize;
@@ -218,7 +218,7 @@ table tbody .expense-history-btn:hover {
 .remove-form {
   border: 2px solid red;
   padding: 20px 40px;
-  width: 350px;
+  width: 360px;
   border-radius: 8px;
   background: #fff;
   border: 0;
@@ -244,8 +244,8 @@ table tbody .expense-history-btn:hover {
 }
 .remove-form label input {
   font-size: 1rem;
-  padding: 11px 10px;
-  border: 1px solid mediumslateblue;
+  padding: 13px 10px;
+  border: 2px solid mediumslateblue;
   border-radius: 4px;
   width: 100%;
 }

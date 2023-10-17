@@ -16,7 +16,7 @@
   display: flex;
   flex-direction: column;
   padding: 40px 40px 40px 40px;
-  width: 350px;
+  width: 360px;
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 0 2px 4px #cacaca;
@@ -27,12 +27,14 @@
   text-align: center;
   padding-bottom: 5px;
 }
+
 .login-container form input {
-  font-size: 0.9rem;
-  padding: 11px 10px;
-  border: 1px solid mediumslateblue;
+  font-size: 1rem;
+  padding: 13px 10px;
+  border: 2px solid mediumslateblue;
   border-radius: 4px;
 }
+
 .login-container form label {
   display: flex;
   position: relative;
@@ -62,13 +64,14 @@
 .login-container form input:focus {
   outline: 2px solid mediumslateblue;
 }
+
 .login-container form p {
-  margin-top: 25px;
+  margin-top: 30px;
   margin-bottom: 5px;
   color: red;
 }
 .login-container form .form-footer-sec {
-  margin-top: 30px;
+  margin-top: 35px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -79,7 +82,7 @@
 }
 
 .login-container form .form-footer-sec button {
-  padding: 10px 30px;
+  padding: 12px 30px;
   font-size: 1rem;
   font-weight: 900;
   background-color: mediumslateblue;

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../Css/AdminLogin.css";
-import axios from "axios";
+
 function AdminLogin() {
   const navigate = useNavigate();
   const [isLoginFormSubmitted, setIsLoginFormSubmited] = useState(false);
@@ -29,17 +30,7 @@ function AdminLogin() {
 
     setIsLoginFormSubmited(true);
   };
-  const loginFormValidater = () => {
-    const error = {};
-    if (!loginData.name) {
-      error.userNameError = "UserName Required";
-    }
-    if (!loginData.password) {
-      error.passwordError = "Password Required";
-    }
-    setLoginFormError(error);
-    return true;
-  };
+
   const handlePasswordVisibility = (e) => {
     e.preventDefault();
     setVisibility(!visibility);
@@ -55,10 +46,22 @@ function AdminLogin() {
     return () => window.removeEventListener("keydown", handleEnterKey);
   });
   useEffect(() => {
+    const loginFormValidater = () => {
+      const error = {};
+      if (!loginData.name) {
+        error.userNameError = "UserName Required";
+      }
+      if (!loginData.password) {
+        error.passwordError = "Password Required";
+      }
+      setLoginFormError(error);
+      return true;
+    };
     if (isLoginFormSubmitted) {
       setIsLoginValidated(loginFormValidater());
       setIsLoginFormSubmited(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoginFormSubmitted]);
   useEffect(() => {
     if (isLoginValidated && Object.keys(loginFormError).length === 0) {
@@ -66,7 +69,7 @@ function AdminLogin() {
         try {
           setFormLoading(true);
           const loginResult = await axios.post(
-            "http://localhost:9000/client/auth",
+            `${process.env.REACT_APP_API_URL}/auth`,
             loginData
           );
           if (loginResult.data?.status) {
@@ -85,12 +88,13 @@ function AdminLogin() {
             }
           }
         } catch (error) {
-          console.log(error);
+          console.log(error.message);
         } finally {
           setFormLoading(false);
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoginValidated]);
   return (
     <>

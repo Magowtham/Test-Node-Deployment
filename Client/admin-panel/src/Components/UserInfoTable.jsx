@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useFetcher, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Paginater from "./Paginater";
 import "../Css/UserInfoTable.css";
-import TableLoader from "./TableLoader";
+import PageLoader from "./PageLoader";
 
 function UserInfoTable({
   adminUserName,
+  isSearchLoading,
   searchData,
   searchRefresh,
   initialRefresh,
@@ -16,9 +16,10 @@ function UserInfoTable({
   reductionStatus,
 }) {
   const navigate = useNavigate();
+  const [abortControllers, setAbortControllers] = useState([]);
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [pageData, setPageData] = useState([]);
-  const [pageSize, setPageSize] = useState(9);
+  const [pageSize] = useState(9);
   const [presentPage, setPresentPage] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isEditClicked, setIsEditClicked] = useState(false);
@@ -48,19 +49,29 @@ function UserInfoTable({
   const removeFormRef = useRef(null);
   const removeFormInputRef = useRef(null);
   const editPasswordRef = useRef(null);
-
   const fetchPageData = async (pageNumber, totalCount) => {
     try {
       setIsTableLoading(true);
-      const result = await axios.get(
-        `http://localhost:9000/client/getuser?pageNumber=${pageNumber}&pageLimit=${pageSize}`
+      console.log(abortControllers);
+      abortControllers.forEach((controller) => {
+        controller.abort();
+      });
+      const abortController = new AbortController();
+      setAbortControllers(() => [...abortControllers, abortController]);
+      const result = await fetch(
+        `${process.env.REACT_APP_API_URL}/getuser?pageNumber=${pageNumber}&pageLimit=${pageSize}`,
+        {
+          signal: abortController.signal,
+        }
       );
+      const data = await result.json();
       if (totalCount) {
-        setTotalUsers(result?.data.totalUsers);
+        setTotalUsers(data?.totalUsers);
       }
-      setPageData(result?.data.users);
+      setPageData(data?.users);
+      abortController.abort();
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setIsTableLoading(false);
     }
@@ -193,16 +204,23 @@ function UserInfoTable({
       (async () => {
         try {
           setFormLoading(true);
-          const result = await axios.put(
+          const result = await fetch(
             `http://localhost:9000/client/update/${pageData[editIndex]._id}`,
-            editData
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(editData),
+            }
           );
-          if (result.data?.status) {
+          const data = await result.json();
+          if (data?.status) {
             setIsEditClicked(false);
             fetchPageData(presentPage, false);
             setIsOverlay(false);
           } else {
-            setEditError({ serverMessage: result.data?.message });
+            setEditError({ serverMessage: data?.message });
           }
         } catch (err) {
           console.log(err.message);
@@ -211,34 +229,41 @@ function UserInfoTable({
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditValidated]);
   useEffect(() => {
     if (isRemoveFormValidated && Object.keys(removeFormError).length === 0) {
       (async () => {
         try {
           setFormLoading(true);
-          const result = await axios.post(
-            "http://localhost:9000/client/delete",
-            {
+
+          const result = await fetch("http://localhost:9000/client/delete", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
               name: adminUserName,
               rfid: removeRfid,
               password: removeFormData,
-            }
-          );
-          if (result.data?.status) {
+            }),
+          });
+          const data = await result.json();
+          if (data?.status) {
             setIsRemoveClicked(false);
             fetchPageData(presentPage, true);
             setIsOverlay(false);
           } else {
-            setRemoveFormError({ serverMessage: result.data?.message });
+            setRemoveFormError({ serverMessage: data?.message });
           }
-        } catch (err) {
-          console.log(err);
+        } catch (error) {
+          console.log(error.message);
         } finally {
           setFormLoading(false);
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRemoveFormValidated]);
   useEffect(() => {
     if (!isOverlay) {
@@ -251,12 +276,14 @@ function UserInfoTable({
       setIsEditValidated(editValidater());
       setIsEditSubmited(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditSubmited]);
   useEffect(() => {
     if (isRemoveSubmited) {
       setIsRemoveFormValidated(removeFormValidater());
       setIsRemoveSubmited(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRemoveSubmited]);
 
   useEffect(() => {
@@ -266,9 +293,12 @@ function UserInfoTable({
   }, [searchData]);
 
   useEffect(() => {
+    setAbortControllers([]);
+    console.log(abortControllers);
     if (searchRefresh && !initialRefresh) {
       fetchPageData(presentPage, false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchRefresh]);
 
   let triggerOnce = true;
@@ -296,7 +326,9 @@ function UserInfoTable({
               <th>{reductionStatus ? `Recharge` : `View`} Details</th>
             </tr>
           </thead>
-          <tbody className={`${isTableLoading ? `hide` : ``}`}>
+          <tbody
+            className={`${isTableLoading || isSearchLoading ? `hide` : ``}`}
+          >
             {pageData?.map((user, index) => (
               <tr key={index + 1}>
                 <td className="slno">{presentPage * pageSize + (index + 1)}</td>
@@ -313,7 +345,7 @@ function UserInfoTable({
                     }}
                     className="edit-btn"
                   >
-                    <span class="material-symbols-outlined">edit</span>
+                    <span className="material-symbols-outlined">edit</span>
                   </button>
                   <button
                     onClick={() => {
@@ -321,7 +353,7 @@ function UserInfoTable({
                     }}
                     className="delete-btn"
                   >
-                    <span class="material-symbols-outlined">delete</span>
+                    <span className="material-symbols-outlined">delete</span>
                   </button>
                 </td>
                 <td className="view-details-sec">
@@ -349,9 +381,11 @@ function UserInfoTable({
           </tbody>
         </table>
         <div
-          className={`table-loader-container ${isTableLoading ? `` : `hide`}`}
+          className={`table-loader-container ${
+            isTableLoading || isSearchLoading ? `` : `hide`
+          }`}
         >
-          <TableLoader />
+          <PageLoader />
         </div>
       </div>
       <div className="paginater-sec">

@@ -1,7 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import TableLoader from "./TableLoader";
+import PageLoader from "./PageLoader";
 import Paginater from "./Paginater";
 
 import "../Css/RechargeHistory.css";
@@ -18,7 +18,7 @@ function RechargeHistory() {
     try {
       setIsTableLoading(true);
       const result = await axios.get(
-        `http://localhost:9000/client/recharge_history?rfid=${
+        `${process.env.REACT_APP_API_URL}/recharge_history?rfid=${
           state.rfid
         }&pageStart=${pageNumber}&pageSize=${pageSize}&reductionStatus=${
           state?.reductionStatus ? 1 : 0
@@ -29,7 +29,7 @@ function RechargeHistory() {
       }
       setPageData(result.data?.history);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     } finally {
       setIsTableLoading(false);
     }
@@ -43,6 +43,7 @@ function RechargeHistory() {
     if (!state?.auth) {
       navigate("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
   let triggerOnce = false;
   useEffect(() => {
@@ -89,7 +90,7 @@ function RechargeHistory() {
         <div
           className={`table-loader-container ${isTableLoading ? `` : `hide`}`}
         >
-          <TableLoader />
+          <PageLoader />
         </div>
       </div>
       <div
