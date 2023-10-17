@@ -1,8 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const PORT = 9000;
-const app = express();
+require("dotenv").config();
 
+const app = express();
+const PORT = process.env.PORT || 5000;
 //mongodb connection
 require("./config/db");
 //middlewares
