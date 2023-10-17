@@ -10,7 +10,7 @@ require("./config/db");
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://telephone-project-admin-panel-test.onrender.com",
   })
 );
 //main routes
